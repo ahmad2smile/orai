@@ -3,4 +3,8 @@ project(orai)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(orai main.cpp)
+add_executable(orai src/main.cpp
+        src/Statement.cpp
+        src/Statement.h
+        src/Shell.cpp
+        src/Shell.h)
