@@ -7,4 +7,8 @@ add_executable(orai src/main.cpp
         src/Statement.cpp
         src/Statement.h
         src/Shell.cpp
-        src/Shell.h)
+        src/Shell.h
+        src/Plugins/Kubernetes/Porting.cpp
+        src/Plugins/Kubernetes/Porting.h
+        src/Compiler/Lexer.cpp
+        src/Compiler/Lexer.h)
