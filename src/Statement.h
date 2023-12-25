@@ -5,6 +5,7 @@
 #ifndef ORAI_STATEMENT_H
 #define ORAI_STATEMENT_H
 
+#include <string>
 #include <vector>
 
 namespace Orai {

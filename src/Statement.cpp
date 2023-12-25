@@ -5,6 +5,8 @@
 #include <iostream>
 #include "Statement.h"
 
+#include <sstream>
+
 namespace Orai {
     Orai::Statement::Statement(const char* raw) : _raw(raw) {}
 

@@ -57,7 +57,7 @@ std::string Lexer::GetWord(const char *raw, int wordStartIndex) {
     return word;
 }
 
-Token Lexer::GetToken(std::string word) {
+std::string Lexer::GetToken(std::string word) {
 
 
     return std::string();

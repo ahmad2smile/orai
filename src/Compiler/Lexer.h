@@ -32,7 +32,7 @@ private:
 
     static std::string GetWord(const char *raw, int wordStartIndex);
 
-    static Token GetToken(std::string word);
+    static std::string GetToken(std::string word);
 };
 
 
