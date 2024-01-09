@@ -4,48 +4,67 @@
 
 #include "Input.h"
 
-#include <cstring>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 
-Input::Input(const char* value, const sf::Font &font) {
+Input::Input(const std::string &value, const sf::Font &font) {
     _value = value;
-    _text = sf::Text(_value, font);
+    _font = font;
+
+    update(_value);
 }
 
 void Input::render(sf::RenderWindow* window) const {
-    window->draw(_text);
+    for (const auto &line: _lines) {
+        window->draw(line);
+    }
 }
 
-void Input::update(const char* value) {
+void Input::update(const std::string &value) {
     _value = value;
-    _text.setString(_value);
+    _lines.clear();
+
+    auto new_line_pos = _value.find('\n', 0);
+
+    while ((new_line_pos = _value.find('\n', new_line_pos + 1)) != std::string::npos) {
+        auto line = sf::Text(_value.substr(0, new_line_pos + 1), _font);
+        line.setPosition(0, _lines.size() * 20); // NOLINT(*-narrowing-conversions)
+
+        _lines.push_back(line);
+    }
+
+    // if (start_pos < _value.length()) {
+    //     // NOTE: if no new line, so use whole value
+    //     auto line = sf::Text(_value.substr(start_pos), _font);
+    //     line.setPosition(0, _lines.size() * 20); // NOLINT(*-narrowing-conversions)
+    //
+    //     _lines.push_back(line);
+    // }
 }
 
 void Input::update(const sf::Event* event) {
     if (event->type == sf::Event::TextEntered) {
-        const size_t value_size = strlen(_value);
+        const size_t value_size = _value.length();
 
         // NOTE: Backspace
-        if (event->text.unicode == 8) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace)) {
+            if (!_value.empty()) {
+                _value.erase(_value.length() - 1);
+
+                update(_value);
+            }
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
             if (const auto new_index = value_size - 1; new_index > 0) {
-                const auto new_value = new char[new_index];
+                _value.push_back('\n');
 
-                strcpy(new_value, _value);
-
-                new_value[value_size - 1] = '\0';
-
-                update(new_value);
+                update(_value);
             }
         }
         else if (event->text.unicode < 128) {
-            // TODO: Optimize by pre-allocating some reasonable buffer
-            const auto new_value = new char[value_size + 1];
-            strcpy(new_value, _value);
-            new_value[value_size] = static_cast<char>(event->text.unicode);
-            new_value[value_size + 1] = '\0';
+            _value.push_back(static_cast<char>(event->text.unicode));
 
-            update(new_value);
+            update(_value);
         }
     }
 }

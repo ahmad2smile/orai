@@ -17,15 +17,15 @@ namespace Orai {
     }
 
     void Statement::ParseCommands() {
-        std::stringstream stream = new std::stringstream(_raw);
-        std::string command;
-        while (std::getline(stream, command, ';')) {
-            _commands.push_back(command);
-            if (command.empty()) {
-                _commands.pop_back();
-                break;
-            }
-        }
+        // std::stringstream stream = new std::stringstream(_raw);
+        // std::string command;
+        // while (std::getline(stream, command, ';')) {
+        //     _commands.push_back(command);
+        //     if (command.empty()) {
+        //         _commands.pop_back();
+        //         break;
+        //     }
+        // }
     }
 
     std::vector<std::string> Statement::GetCommands() {

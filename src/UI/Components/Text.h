@@ -1,14 +1,17 @@
-// Created by ahmad on 21.12.23.
+//
+// Created by ahmad on 25.12.23.
 //
 
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef TEXT_H
+#define TEXT_H
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-class Input {
+
+class Text {
 public:
-    explicit Input(const std::string &value, const sf::Font &font);
+    explicit Text(const std::string &value, const sf::Font &font);
 
     void render(sf::RenderWindow* window) const;
 
@@ -23,4 +26,4 @@ private:
 };
 
 
-#endif //INPUT_H
+#endif //TEXT_H

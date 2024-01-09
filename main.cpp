@@ -1,4 +1,4 @@
-#include "UI/App.h"
+#include "src/UI/App.h"
 
 int main() {
     auto app = UI::App();
