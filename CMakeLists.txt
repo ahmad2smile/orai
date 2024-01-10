@@ -3,6 +3,8 @@ project(orai)
 
 set(CMAKE_CXX_STANDARD 23)
 
+include(./vcpkg/scripts/buildsystems/vcpkg.cmake)
+
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 
 find_package(GTest REQUIRED)
