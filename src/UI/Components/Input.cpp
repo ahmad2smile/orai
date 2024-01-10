@@ -7,6 +7,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 
+#include "../Utils/InputUtils.h"
+
 Input::Input(const std::string &value, const sf::Font &font) {
     _value = value;
     _font = font;
@@ -24,22 +26,14 @@ void Input::update(const std::string &value) {
     _value = value;
     _lines.clear();
 
-    auto new_line_pos = _value.find('\n', 0);
+    const auto lines = InputUtils::getNewLines(_value, _fontSize);
 
-    while ((new_line_pos = _value.find('\n', new_line_pos + 1)) != std::string::npos) {
-        auto line = sf::Text(_value.substr(0, new_line_pos + 1), _font);
-        line.setPosition(0, _lines.size() * 20); // NOLINT(*-narrowing-conversions)
+    for (const auto &[value, offset]: *lines) {
+        auto text = sf::Text(value, _font);
+        text.setPosition(0 + _marginX, offset + _marginY);
 
-        _lines.push_back(line);
+        _lines.push_back(text);
     }
-
-    // if (start_pos < _value.length()) {
-    //     // NOTE: if no new line, so use whole value
-    //     auto line = sf::Text(_value.substr(start_pos), _font);
-    //     line.setPosition(0, _lines.size() * 20); // NOLINT(*-narrowing-conversions)
-    //
-    //     _lines.push_back(line);
-    // }
 }
 
 void Input::update(const sf::Event* event) {
@@ -67,4 +61,13 @@ void Input::update(const sf::Event* event) {
             update(_value);
         }
     }
+}
+
+void Input::setFontSize(const int fontSize) {
+    _fontSize = fontSize;
+}
+
+void Input::setMargin(const float x, const float y) {
+    _marginX = x;
+    _marginY = y;
 }

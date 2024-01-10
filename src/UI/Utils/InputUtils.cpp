@@ -4,16 +4,24 @@
 
 #include "InputUtils.h"
 
-auto InputUtils::getNewLines(const std::string &input) -> std::vector<Line>* {
-    auto new_line_pos = input.find('\n', 0);
+auto InputUtils::getNewLines(const std::string &input, const float line_height = 20) -> std::vector<Line>* {
+    size_t new_line_pos = 0;
+    size_t last_line_pos = 0;
     const auto lines = new std::vector<Line>();
 
-    while ((new_line_pos = input.find('\n', new_line_pos + 1)) != std::string::npos) {
-        const auto value = input.substr(0, new_line_pos + 1);
+    while (new_line_pos != std::string::npos) {
+        new_line_pos = input.find('\n', last_line_pos);
 
-        auto line = Line{value, static_cast<int>(lines->size()) * 20};
+        const auto line_len = new_line_pos != std::string::npos
+                                  ? new_line_pos - last_line_pos
+                                  : input.size() - last_line_pos;
 
-        lines->push_back(line);
+        const auto value = input.substr(last_line_pos, line_len);
+
+        const float offset = lines->size() * line_height;
+
+        lines->push_back(Line{value, offset});
+        last_line_pos = new_line_pos + 1;
     }
 
     return lines;

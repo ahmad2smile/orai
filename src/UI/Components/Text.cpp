@@ -7,6 +7,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 
+#include "../Utils/InputUtils.h"
+
 Text::Text(const std::string &value, const sf::Font &font) {
     _value = value;
     _font = font;
@@ -24,13 +26,13 @@ void Text::update(const std::string &value) {
     _value = value;
     _lines.clear();
 
-    auto new_line_pos = _value.find('\n', 0);
+    const auto lines = InputUtils::getNewLines(_value, _fontSize);
 
-    while (new_line_pos != std::string::npos) {
-        const auto line = sf::Text(_value.substr(0, new_line_pos), _font);
+    for (const auto &[value, offset]: *lines) {
+        auto text = sf::Text(value, _font);
+        text.setPosition(0, static_cast<float>(offset));
 
-        _lines.push_back(line);
-        new_line_pos = _value.find('\n', new_line_pos + 1);
+        _lines.push_back(text);
     }
 }
 
@@ -38,4 +40,8 @@ void Text::update(const sf::Event* event) {
     if (event->type == sf::Event::Resized) {
         update(_value);
     }
+}
+
+void Text::setFontSize(const int fontSize) {
+    _fontSize = fontSize;
 }

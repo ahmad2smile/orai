@@ -19,9 +19,12 @@ public:
 
     void update(const sf::Event* event);
 
+    void setFontSize(int fontSize);
+
 private:
     std::string _value;
     sf::Font _font;
+    int _fontSize = 18;
     std::vector<sf::Text> _lines;
 };
 

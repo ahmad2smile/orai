@@ -9,6 +9,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "Components/Input.h"
+#include "Components/Text.h"
 
 namespace UI {
     App::App() = default;
@@ -30,7 +31,11 @@ namespace UI {
     }
 
     void App::run(sf::RenderWindow* window) const {
-        const auto input = new Input(">", _font);
+        const auto initializer = new Text("$", _font);
+
+        const auto input = new Input("", _font);
+        input->setFontSize(25);
+        input->setMargin(25, 0);
 
         while (window->isOpen()) {
             sf::Event event{};
@@ -46,12 +51,14 @@ namespace UI {
                                                static_cast<float>(event.size.height))));
                 }
 
+                initializer->update(&event);
                 input->update(&event);
             }
 
             window->clear();
 
             input->render(window);
+            initializer->render(window);
 
             window->display();
         }

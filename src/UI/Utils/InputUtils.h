@@ -10,12 +10,12 @@
 
 struct Line {
     std::string value;
-    int offset;
+    float offset;
 };
 
 class InputUtils {
 public:
-    static std::vector<Line>* getNewLines(const std::string &input);
+    static std::vector<Line>* getNewLines(const std::string &input, float line_height);
 };
 
 
