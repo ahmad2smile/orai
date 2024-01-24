@@ -9,22 +9,24 @@
 #include <SFML/Graphics/Text.hpp>
 
 
-class Text {
+class Text final : public sf::Text {
 public:
-    explicit Text(const std::string &value, const sf::Font &font);
+    // explicit Text(const std::string &value, const sf::Font &font);
+
+    explicit Text(const std::wstring &&value, const sf::Font &font);
 
     void render(sf::RenderWindow* window) const;
 
-    void update(const std::string &value);
+    void update(const std::wstring &value);
 
     void update(const sf::Event* event);
 
     void setFontSize(int fontSize);
 
 private:
-    std::string _value;
+    std::wstring _value;
     sf::Font _font;
-    int _fontSize = 18;
+    float _fontSize = 18;
     std::vector<sf::Text> _lines;
 };
 

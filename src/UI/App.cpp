@@ -31,9 +31,19 @@ namespace UI {
     }
 
     void App::run(sf::RenderWindow* window) const {
-        const auto initializer = new Text("$", _font);
+        const auto bgColor = sf::Color(2, 5, 23);
+        const auto windowSize = window->getSize();
 
-        const auto input = new Input("", _font);
+        sf::View view;
+
+        view.setSize(windowSize.x, windowSize.y); // The view size is the same as the window size
+        view.setCenter(400, 300); // The view center is the same as the window center
+        view.setViewport(sf::FloatRect(0, 0, 1, 1)); // The view covers the whole window
+
+        const auto initializer = new Text(L"╭─  ╱  ~ ", _font);
+        initializer->setStyle(sf::Text::Bold);
+
+        const auto input = new Input(L"", _font);
         input->setFontSize(25);
         input->setMargin(25, 0);
 
@@ -55,7 +65,7 @@ namespace UI {
                 input->update(&event);
             }
 
-            window->clear();
+            window->clear(bgColor);
 
             input->render(window);
             initializer->render(window);

@@ -9,7 +9,7 @@
 
 #include "../Utils/InputUtils.h"
 
-Text::Text(const std::string &value, const sf::Font &font) {
+Text::Text(const std::wstring &&value, const sf::Font &font) {
     _value = value;
     _font = font;
 
@@ -22,7 +22,7 @@ void Text::render(sf::RenderWindow* window) const {
     }
 }
 
-void Text::update(const std::string &value) {
+void Text::update(const std::wstring &value) {
     _value = value;
     _lines.clear();
 
@@ -30,7 +30,7 @@ void Text::update(const std::string &value) {
 
     for (const auto &[value, offset]: *lines) {
         auto text = sf::Text(value, _font);
-        text.setPosition(0, static_cast<float>(offset));
+        text.setPosition(0, offset);
 
         _lines.push_back(text);
     }

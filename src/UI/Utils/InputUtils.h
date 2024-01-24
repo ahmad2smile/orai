@@ -9,13 +9,13 @@
 #include <vector>
 
 struct Line {
-    std::string value;
+    std::wstring value;
     float offset;
 };
 
 class InputUtils {
 public:
-    static std::vector<Line>* getNewLines(const std::string &input, float line_height);
+    static std::vector<Line>* getNewLines(const std::wstring &input, float line_height);
 };
 
 

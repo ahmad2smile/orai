@@ -8,11 +8,11 @@
 
 class Input {
 public:
-    explicit Input(const std::string &value, const sf::Font &font);
+    explicit Input(const std::wstring &value, const sf::Font &font);
 
     void render(sf::RenderWindow* window) const;
 
-    void update(const std::string &value);
+    void update(const std::wstring &value);
 
     void update(const sf::Event* event);
 
@@ -21,7 +21,7 @@ public:
     void setMargin(float x, float y);
 
 private:
-    std::string _value;
+    std::wstring _value;
     sf::Font _font;
     float _fontSize = 18;
     float _marginX = 0;

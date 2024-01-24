@@ -9,7 +9,7 @@
 
 #include "../Utils/InputUtils.h"
 
-Input::Input(const std::string &value, const sf::Font &font) {
+Input::Input(const std::wstring &value, const sf::Font &font) {
     _value = value;
     _font = font;
 
@@ -22,7 +22,7 @@ void Input::render(sf::RenderWindow* window) const {
     }
 }
 
-void Input::update(const std::string &value) {
+void Input::update(const std::wstring &value) {
     _value = value;
     _lines.clear();
 

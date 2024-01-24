@@ -4,7 +4,7 @@
 
 #include "InputUtils.h"
 
-auto InputUtils::getNewLines(const std::string &input, const float line_height = 20) -> std::vector<Line>* {
+auto InputUtils::getNewLines(const std::wstring &input, const float line_height = 20) -> std::vector<Line>* {
     size_t new_line_pos = 0;
     size_t last_line_pos = 0;
     const auto lines = new std::vector<Line>();
