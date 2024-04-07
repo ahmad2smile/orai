@@ -18,7 +18,10 @@ file(GLOB_RECURSE HEADERS src/*.h)
 
 configure_file(assets/FiraCodeNerdFont-Light.ttf ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
-add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs})
+add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs}
+        src/UI/Components/Scrollable.cpp
+        src/UI/Components/Scrollable.h
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main sfml-system sfml-network sfml-graphics sfml-window)
 

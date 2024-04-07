@@ -2,6 +2,7 @@
 // Created by ahmad on 10.12.23.
 //
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 #include "App.h"
 
@@ -9,12 +10,13 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "Components/Input.h"
+#include "Components/Scrollable.h"
 #include "Components/Text.h"
 
 namespace UI {
     App::App() = default;
 
-    sf::RenderWindow* App::initialize(const int width, const int height, const char* title) {
+    sf::RenderWindow *App::initialize(const int width, const int height, const char *title) {
         const auto window = new sf::RenderWindow(sf::VideoMode(width, height), title);
 
         // NOTE: To avoid screen tearning
@@ -30,16 +32,7 @@ namespace UI {
         return window;
     }
 
-    void App::run(sf::RenderWindow* window) const {
-        const auto bgColor = sf::Color(2, 5, 23);
-        const auto windowSize = window->getSize();
-
-        sf::View view;
-
-        view.setSize(windowSize.x, windowSize.y); // The view size is the same as the window size
-        view.setCenter(400, 300); // The view center is the same as the window center
-        view.setViewport(sf::FloatRect(0, 0, 1, 1)); // The view covers the whole window
-
+    void App::run(sf::RenderWindow &window) const {
         const auto initializer = new Text(L"╭─  ╱  ~ ", _font);
         initializer->setStyle(sf::Text::Bold);
 
@@ -47,30 +40,40 @@ namespace UI {
         input->setFontSize(25);
         input->setMargin(25, 0);
 
-        while (window->isOpen()) {
+        sf::RectangleShape rectangle(sf::Vector2f(50, 50));
+        rectangle.setFillColor(sf::Color::Red);
+        rectangle.setPosition(0, 100);
+
+        Scrollable scrollable({0, 0, 0.5, 1.0}, window);
+        scrollable.addItem(&rectangle);
+        scrollable.addItem(initializer);
+        scrollable.addItem(input);
+
+        while (window.isOpen()) {
             sf::Event event{};
 
-            while (window->pollEvent(event)) {
+            while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed) {
-                    window->close();
+                    window.close();
                 }
 
                 if (event.type == sf::Event::Resized) {
-                    window->setView(
-                        sf::View(sf::FloatRect(0, 0, static_cast<float>(event.size.width),
-                                               static_cast<float>(event.size.height))));
+                    window.setView(
+                            sf::View(sf::FloatRect(0, 0, static_cast<float>(event.size.width),
+                                                   static_cast<float>(event.size.height))));
                 }
 
                 initializer->update(&event);
                 input->update(&event);
+                scrollable.update(&event);
+
             }
 
-            window->clear(bgColor);
+            window.clear(sf::Color(2, 5, 23));
 
-            input->render(window);
-            initializer->render(window);
+            window.draw(scrollable);
 
-            window->display();
+            window.display();
         }
     }
 } // UI

@@ -18,7 +18,7 @@ auto InputUtils::getNewLines(const std::wstring &input, const float line_height 
 
         const auto value = input.substr(last_line_pos, line_len);
 
-        const float offset = lines->size() * line_height;
+        const float offset = static_cast<float>(lines->size()) * line_height;
 
         lines->push_back(Line{value, offset});
         last_line_pos = new_line_pos + 1;

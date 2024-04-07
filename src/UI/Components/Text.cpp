@@ -16,27 +16,21 @@ Text::Text(const std::wstring &&value, const sf::Font &font) {
     update(_value);
 }
 
-void Text::render(sf::RenderWindow* window) const {
-    for (const auto &line: _lines) {
-        window->draw(line);
-    }
-}
-
 void Text::update(const std::wstring &value) {
     _value = value;
     _lines.clear();
 
     const auto lines = InputUtils::getNewLines(_value, _fontSize);
 
-    for (const auto &[value, offset]: *lines) {
-        auto text = sf::Text(value, _font);
-        text.setPosition(0, offset);
+    for (const auto &[val, offset]: *lines) {
+        auto text = sf::Text(val, _font);
+        text.setPosition(0 + _marginX, offset + _marginY);
 
         _lines.push_back(text);
     }
 }
 
-void Text::update(const sf::Event* event) {
+void Text::update(const sf::Event *event) {
     if (event->type == sf::Event::Resized) {
         update(_value);
     }
@@ -44,4 +38,15 @@ void Text::update(const sf::Event* event) {
 
 void Text::setFontSize(const int fontSize) {
     _fontSize = fontSize;
+}
+
+void Text::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    for (const auto &line: _lines) {
+        target.draw(line);
+    }
+}
+
+void Text::setMargin(const float x, const float y) {
+    _marginX = x;
+    _marginY = y;
 }

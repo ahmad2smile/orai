@@ -4,26 +4,29 @@
 
 #ifndef TEXT_H
 #define TEXT_H
+
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 
 
-class Text final : public sf::Text {
+class Text : public sf::Text {
 public:
-    // explicit Text(const std::string &value, const sf::Font &font);
-
     explicit Text(const std::wstring &&value, const sf::Font &font);
 
-    void render(sf::RenderWindow* window) const;
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
     void update(const std::wstring &value);
 
-    void update(const sf::Event* event);
+    virtual void update(const sf::Event *event);
 
     void setFontSize(int fontSize);
 
-private:
+    void setMargin(float x, float y);
+
+protected:
+    float _marginX = 0;
+    float _marginY = 0;
     std::wstring _value;
     sf::Font _font;
     float _fontSize = 18;
