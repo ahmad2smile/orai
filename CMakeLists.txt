@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.19)
 project(orai)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_COMPILER=clang)
 
 include(./vcpkg/scripts/buildsystems/vcpkg.cmake)
 
@@ -23,11 +24,15 @@ add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs}
         src/UI/Components/Scrollable.h
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main sfml-system sfml-network sfml-graphics sfml-window)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
 
 enable_testing()
 
+#add_subdirectory(libs/fuzztest)
+
 find_package(SFML REQUIRED COMPONENTS system window graphics)
+
+#fuzztest_setup_fuzzing_flags()
 
 add_executable(test_target ${TESTS} ${SOURCES} ${HEADERs})
 
@@ -35,4 +40,5 @@ target_include_directories(test_target PRIVATE ${SFML_INCLUDE_DIRS})
 target_link_libraries(test_target PRIVATE GTest::gtest GTest::gtest_main sfml-system sfml-window sfml-graphics)
 
 include(GoogleTest)
+
 gtest_discover_tests(test_target)

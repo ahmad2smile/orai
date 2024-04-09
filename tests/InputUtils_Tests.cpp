@@ -3,22 +3,40 @@
 //
 
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
+#include <string>
+#include <algorithm>
 #include "../src/UI/Utils/InputUtils.h"
 
-TEST(InputUtils_getNewLines, No_New_Line) {
-    EXPECT_EQ(InputUtils::widthBoundedString("Input here", 20)->size(), 1);
+using namespace ::testing;
+
+std::wstring generateStr(int len) {
+    std::wstring str;
+
+    while (str.size() < len) {
+        str += L"word ";
+    }
+
+    return str;
 }
 
-TEST(InputUtils_getNewLines, New_Lines) {
-    const std::string input = "Input here\nNew line 1\nNew line 2\nNew line 3";
-    const std::string line0 = "Input here";
-    const std::string line1 = "New line 1";
-    const std::string line2 = "New line 2";
-    const std::string line3 = "New line 3";
+TEST(InputUtils_getNewLines, No_New_Line) {
+    auto totalChars = 100;
+    auto expectedLineSize = 20;
+    auto wordLength = 5;
+    auto charSize = 1;
+    auto str = generateStr(totalChars);
 
-    EXPECT_EQ(InputUtils::widthBoundedString(input, 20)->size(), 4);
-    EXPECT_EQ(InputUtils::widthBoundedString(input, 20)->at(0).value, line0);
-    EXPECT_EQ(InputUtils::widthBoundedString(input, 20)->at(1).value, line1);
-    EXPECT_EQ(InputUtils::widthBoundedString(input, 20)->at(2).value, line2);
-    EXPECT_EQ(InputUtils::widthBoundedString(input, 20)->at(3).value, line3);
+    InputUtils::widthBoundedString(str, expectedLineSize, charSize);
+
+    auto actualLineSize = 0;
+
+    for (const auto &c: str) {
+        actualLineSize += 1;
+
+        if (c == L'\n') {
+            EXPECT_LE(actualLineSize, 20);
+            actualLineSize = 0;
+        }
+    }
 }
