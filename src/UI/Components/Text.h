@@ -12,25 +12,23 @@
 
 class Text : public sf::Text {
 public:
-    explicit Text(const std::wstring &&value, const sf::Font &font);
+    explicit Text(const sf::Font &font, sf::RenderWindow &window);
 
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+    explicit Text(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window);
 
-    void update(const std::wstring &value);
+    explicit Text(const std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds);
+
+    void update(std::wstring &value);
 
     virtual void update(const sf::Event *event);
 
-    void setFontSize(int fontSize);
-
-    void setMargin(float x, float y);
-
 protected:
-    float _marginX = 0;
-    float _marginY = 0;
     std::wstring _value;
     sf::Font _font;
-    float _fontSize = 18;
+    unsigned int _fontSize = 18;
     std::vector<sf::Text> _lines;
+    sf::FloatRect _bounds;
+    sf::RenderWindow &_window;
 };
 
 

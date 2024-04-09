@@ -25,8 +25,6 @@ private:
     std::vector<sf::Drawable *> *_items;
     sf::FloatRect _bounds;
     sf::RenderWindow &_window;
-    float _marginX = 0;
-    float _marginY = 0;
 };
 
 

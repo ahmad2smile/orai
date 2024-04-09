@@ -33,21 +33,17 @@ namespace UI {
     }
 
     void App::run(sf::RenderWindow &window) const {
-        const auto initializer = new Text(L"╭─  ╱  ~ ", _font);
-        initializer->setStyle(sf::Text::Bold);
+        Text initializer(L"╭─  ╱  ~ ", _font, window);
+        initializer.setCharacterSize(25);
+        initializer.setStyle(sf::Text::Bold);
 
-        const auto input = new Input(L"", _font);
-        input->setFontSize(25);
-        input->setMargin(25, 0);
+        Input input(L"", _font, window, {0, 50, 1, 1});
+        input.setCharacterSize(25);
+        input.setStyle(sf::Text::Bold);
 
-        sf::RectangleShape rectangle(sf::Vector2f(50, 50));
-        rectangle.setFillColor(sf::Color::Red);
-        rectangle.setPosition(0, 100);
-
-        Scrollable scrollable({0, 0, 0.5, 1.0}, window);
-        scrollable.addItem(&rectangle);
-        scrollable.addItem(initializer);
-        scrollable.addItem(input);
+        Scrollable scrollable({0, 0, 1.0, 1.0}, window);
+        scrollable.addItem(&initializer);
+        scrollable.addItem(&input);
 
         while (window.isOpen()) {
             sf::Event event{};
@@ -63,8 +59,8 @@ namespace UI {
                                                    static_cast<float>(event.size.height))));
                 }
 
-                initializer->update(&event);
-                input->update(&event);
+                initializer.update(&event);
+                input.update(&event);
                 scrollable.update(&event);
 
             }

@@ -8,13 +8,26 @@
 
 #include "../Utils/InputUtils.h"
 
-Input::Input(const std::wstring &&value, const sf::Font &font) : Text(std::move(value), font) {}
+Input::Input(sf::Font &font, sf::RenderWindow &window) : Text(font, window) {
+
+}
+
+Input::Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window) : Text(std::move(value), font,
+                                                                                          window) {
+
+}
+
+Input::Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds) : Text(
+        std::move(value), font, window, bounds) {}
 
 void Input::update(const sf::Event *event) {
+    if (event->type == sf::Event::Resized) {
+        Text::update(event);
+    }
+
     if (event->type == sf::Event::TextEntered) {
         const size_t value_size = _value.length();
 
-        // NOTE: Backspace
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace)) {
             if (!_value.empty()) {
                 _value.erase(value_size - 1);

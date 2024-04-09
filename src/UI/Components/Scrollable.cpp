@@ -15,7 +15,7 @@ Scrollable::Scrollable(sf::FloatRect bounds, sf::RenderWindow &window) :
                                  _bounds.top,
                                  _bounds.width * windowSize.x,
                                  _bounds.height * windowSize.y});
-    _view->setViewport(sf::FloatRect(0.f, 0.f, 0.5f, 1.f));
+    _view->setViewport(_bounds);
 
     _items = new std::vector<sf::Drawable *>();
 }

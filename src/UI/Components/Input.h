@@ -10,7 +10,11 @@
 
 class Input : public Text {
 public:
-    explicit Input(const std::wstring &&value, const sf::Font &font);
+    explicit Input(sf::Font &font, sf::RenderWindow &window);
+
+    explicit Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window);
+
+    explicit Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds);
 
     void update(const sf::Event *event) override;
 };

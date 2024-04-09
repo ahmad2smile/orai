@@ -4,25 +4,27 @@
 
 #include "InputUtils.h"
 
-auto InputUtils::getNewLines(const std::wstring &input, const float line_height = 20) -> std::vector<Line>* {
-    size_t new_line_pos = 0;
-    size_t last_line_pos = 0;
-    const auto lines = new std::vector<Line>();
+void InputUtils::widthBoundedString(std::wstring &value, unsigned int lineWidth, unsigned int charSize) {
+    const unsigned int maxCharsPerLine = lineWidth / charSize;
+    unsigned int lineLength = 0;
+    const auto size = value.size();
+    int lastSpaceIndex = 0;
 
-    while (new_line_pos != std::string::npos) {
-        new_line_pos = input.find('\n', last_line_pos);
+    for (int i = 0; i < size; ++i) {
+        const auto c = value[i];
+        lineLength += 1;
 
-        const auto line_len = new_line_pos != std::string::npos
-                                  ? new_line_pos - last_line_pos
-                                  : input.size() - last_line_pos;
+        if (c == L'\n') {
+            lineLength = 0;
+        } else if (lineLength >= maxCharsPerLine) {
+            value.replace(lastSpaceIndex, 1, L"\n");
 
-        const auto value = input.substr(last_line_pos, line_len);
 
-        const float offset = static_cast<float>(lines->size()) * line_height;
+            lineLength = 0;
+        }
 
-        lines->push_back(Line{value, offset});
-        last_line_pos = new_line_pos + 1;
+        if (c == L' ') {
+            lastSpaceIndex = i;
+        }
     }
-
-    return lines;
 }

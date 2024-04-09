@@ -6,16 +6,10 @@
 #define INPUTUTILS_H
 
 #include <string>
-#include <vector>
-
-struct Line {
-    std::wstring value;
-    float offset;
-};
 
 class InputUtils {
 public:
-    static std::vector<Line>* getNewLines(const std::wstring &input, float line_height);
+    static void widthBoundedString(std::wstring &value, unsigned int lineWidth, unsigned int charSize);
 };
 
 
