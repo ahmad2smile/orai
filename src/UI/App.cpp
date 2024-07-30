@@ -9,9 +9,7 @@
 #include <iostream>
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include "Components/Input.h"
-#include "Components/Scrollable.h"
-#include "Components/Text.h"
+#include "Components/Command.h"
 
 namespace UI {
     App::App() = default;
@@ -33,17 +31,9 @@ namespace UI {
     }
 
     void App::run(sf::RenderWindow &window) const {
-        Text initializer(L"╭─  ╱  ~ ", _font, window);
-        initializer.setCharacterSize(25);
-        initializer.setStyle(sf::Text::Bold);
+        auto engine = new ExecutionEngine();
 
-        Input input(L"", _font, window, {0, 50, 1, 1});
-        input.setCharacterSize(25);
-        input.setStyle(sf::Text::Bold);
-
-        Scrollable scrollable({0, 0, 1.0, 1.0}, window);
-        scrollable.addItem(&initializer);
-        scrollable.addItem(&input);
+        Command command(*engine, _font, window);
 
         while (window.isOpen()) {
             sf::Event event{};
@@ -59,15 +49,14 @@ namespace UI {
                                                    static_cast<float>(event.size.height))));
                 }
 
-                initializer.update(&event);
-                input.update(&event);
-                scrollable.update(&event);
-
+                command.onEvent(&event);
             }
 
+            command.onFrame();
+            
             window.clear(sf::Color(2, 5, 23));
 
-            window.draw(scrollable);
+            window.draw(command);
 
             window.display();
         }

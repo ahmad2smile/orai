@@ -16,7 +16,7 @@ public:
 
     explicit Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds);
 
-    void update(const sf::Event *event) override;
+    void onEvent(const sf::Event *event) override;
 };
 
 

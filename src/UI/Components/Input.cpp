@@ -20,9 +20,9 @@ Input::Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &windo
 Input::Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds) : Text(
         std::move(value), font, window, bounds) {}
 
-void Input::update(const sf::Event *event) {
+void Input::onEvent(const sf::Event *event) {
     if (event->type == sf::Event::Resized) {
-        Text::update(event);
+        Text::onEvent(event);
     }
 
     if (event->type == sf::Event::TextEntered) {
@@ -32,18 +32,18 @@ void Input::update(const sf::Event *event) {
             if (!_value.empty()) {
                 _value.erase(value_size - 1);
 
-                Text::update(_value);
+                Text::setString(_value);
             }
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
             if (const auto new_index = value_size - 1; new_index > 0) {
-                _value.push_back('\n');
+                _value.push_back(L'\n');
 
-                Text::update(_value);
+                Text::setString(_value);
             }
         } else if (event->text.unicode < 128) {
             _value.push_back(static_cast<char>(event->text.unicode));
 
-            Text::update(_value);
+            Text::setString(_value);
         }
     }
 }

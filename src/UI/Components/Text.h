@@ -18,17 +18,33 @@ public:
 
     explicit Text(const std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds);
 
-    void update(std::wstring &value);
+//    void onFrame(std::wstring &value);
 
-    virtual void update(const sf::Event *event);
+    virtual void onEvent(const sf::Event *event);
+
+    void setMargin(sf::Vector2f value);
+
+    sf::Vector2f getPosition();
+
+    void setPosition(sf::Vector2f value);
+
+    void setString(std::wstring &string);
+
+//    void setString(std::string &string);
+
+    void appendString(const std::wstring &string);
+
+//    void appendString(const std::wstring &string);
+
+    void clear();
 
 protected:
     std::wstring _value;
     sf::Font _font;
     unsigned int _fontSize = 18;
-    std::vector<sf::Text> _lines;
     sf::FloatRect _bounds;
     sf::RenderWindow &_window;
+    sf::Vector2f _margin;
 };
 
 
