@@ -4,9 +4,9 @@
 
 #include "InputUtils.h"
 
-void InputUtils::widthBoundedString(std::wstring &value, unsigned int lineWidth, unsigned int charSize) {
-    const unsigned int maxCharsPerLine = lineWidth / charSize;
-    unsigned int lineLength = 0;
+void InputUtils::widthBoundedString(std::wstring &value, float lineWidth, float charSize) {
+    const float maxCharsPerLine = lineWidth / charSize;
+    float lineLength = 0;
     const auto size = value.size();
     int lastSpaceIndex = 0;
 

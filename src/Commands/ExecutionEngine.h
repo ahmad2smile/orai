@@ -5,19 +5,23 @@
 #ifndef ORAI_EXECUTIONENGINE_H
 #define ORAI_EXECUTIONENGINE_H
 
-
 #include <string>
 #include <sstream>
+#include <codecvt>
 #include <optional>
 
 class ExecutionEngine {
 public:
-    FILE* getStream(const char *command);
-    std::optional<std::wstring> readStream(FILE* commandStream);
-    void closeStream(FILE* commandStream);
-    
+    ExecutionEngine();
+    ~ExecutionEngine();
+
+    void executeCommand(const std::wstring& command);
+    std::optional<std::wstring> pollCommandOutput();
+
 private:
-    
+    FILE* _outputStream;
+    std::string _currentWorkingDir;
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>* _wideConverter;
 };
 
 

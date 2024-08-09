@@ -10,41 +10,40 @@
 #include <SFML/Graphics/Text.hpp>
 
 
-class Text : public sf::Text {
+class Text : public sf::Drawable {
 public:
-    explicit Text(const sf::Font &font, sf::RenderWindow &window);
+    explicit Text(std::wstring&& value, const sf::Font& font, const sf::RenderWindow& window, sf::FloatRect bounds);
 
-    explicit Text(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window);
+    explicit Text(std::wstring&& value, const sf::Font& font, unsigned int fontSize, const sf::RenderWindow& window, sf::FloatRect bounds);
 
-    explicit Text(const std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds);
-
-//    void onFrame(std::wstring &value);
-
-    virtual void onEvent(const sf::Event *event);
-
-    void setMargin(sf::Vector2f value);
+    virtual void onEvent(const sf::Event* event);
 
     sf::Vector2f getPosition();
 
-    void setPosition(sf::Vector2f value);
+    std::wstring getString();
+    
+    sf::Rect<float> getLocalBounds();
 
-    void setString(std::wstring &string);
+    virtual void setSize(sf::Vector2f value);
 
-//    void setString(std::string &string);
+    virtual void setPosition(sf::Vector2f value);
 
-    void appendString(const std::wstring &string);
+    void setString(std::wstring& string);
+    
+    void setCharacterSize(unsigned int fontSize);
 
-//    void appendString(const std::wstring &string);
+    void setStyle(sf::Text::Style style);
 
+    void appendString(const std::wstring& string);
+    
     void clear();
+    
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
 protected:
-    std::wstring _value;
-    sf::Font _font;
-    unsigned int _fontSize = 18;
+    sf::Text* _text;
     sf::FloatRect _bounds;
-    sf::RenderWindow &_window;
-    sf::Vector2f _margin;
+    const sf::RenderWindow& _window;
 };
 
 

@@ -8,42 +8,59 @@
 
 #include "../Utils/InputUtils.h"
 
-Input::Input(sf::Font &font, sf::RenderWindow &window) : Text(font, window) {
+Input::Input(std::wstring&& value, const sf::Font& font, const sf::RenderWindow& window, sf::FloatRect bounds)
+    : Text(std::move(value), font, window, bounds) {
 
+    _border = new sf::RectangleShape(sf::Vector2f(bounds.width, bounds.height));
+    _border->setFillColor(sf::Color(15, 34, 52, 255));
+    _border->setOutlineColor(sf::Color(54, 56, 57));
+    _border->setOutlineThickness(2.f);
+    _border->setPosition({_bounds.left + 6, _bounds.top});
 }
 
-Input::Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window) : Text(std::move(value), font,
-                                                                                          window) {
-
+Input::~Input() {
+    delete _border;
 }
 
-Input::Input(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds) : Text(
-        std::move(value), font, window, bounds) {}
+void Input::setSize(sf::Vector2f value) {
+    _border->setSize(sf::Vector2f(value.x - 8, value.y - 8));
+}
 
-void Input::onEvent(const sf::Event *event) {
-    if (event->type == sf::Event::Resized) {
-        Text::onEvent(event);
-    }
+void Input::setPosition(sf::Vector2f value) {
+    Text::setPosition({value.x + 8, value.y + 8});
+
+    _border->setPosition({value.x + 6, value.y});
+}
+
+void Input::onEvent(const sf::Event* event) {
+    Text::onEvent(event);
 
     if (event->type == sf::Event::TextEntered) {
-        const size_t value_size = _value.length();
+        auto value = Text::getString();
+        const size_t value_size = value.length();
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace)) {
-            if (!_value.empty()) {
-                _value.erase(value_size - 1);
+            if (!value.empty()) {
+                value.erase(value_size - 1);
 
-                Text::setString(_value);
+                Text::setString(value);
             }
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
             if (const auto new_index = value_size - 1; new_index > 0) {
-                _value.push_back(L'\n');
+                value.push_back(L'\n');
 
-                Text::setString(_value);
+                Text::setString(value);
             }
         } else if (event->text.unicode < 128) {
-            _value.push_back(static_cast<char>(event->text.unicode));
+            value.push_back(static_cast<char>(event->text.unicode));
 
-            Text::setString(_value);
+            Text::setString(value);
         }
     }
+}
+
+void Input::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    target.draw(*_border);
+
+    Text::draw(target, states);
 }

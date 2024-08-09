@@ -6,41 +6,37 @@
 #include <array>
 #include <memory>
 #include <locale>
-#include <codecvt>
 #include <vector>
 #include <optional>
 #include "ExecutionEngine.h"
+#include <cstdlib>
 
-std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
 
-FILE *ExecutionEngine::getStream(const char *command) {
-//    std::unique_ptr<FILE, void (*)(FILE *)> commandStream(popen(command, "r"), [](FILE *pipe) { pclose(pipe); });
-    FILE *commandStream = popen(command, "r");
+ExecutionEngine::ExecutionEngine()
+    : _outputStream(nullptr), _currentWorkingDir("~/"),
+      _wideConverter(new std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>()) {}
 
-    if (!commandStream) {
-        return nullptr;
-//        return L"pipe error";
+ExecutionEngine::~ExecutionEngine() {
+    if (_outputStream) {
+        pclose(_outputStream);
     }
-
-    return commandStream;
-
-
-//    return result;
+    delete _outputStream;
+    delete _wideConverter;
 }
 
-std::optional<std::wstring> ExecutionEngine::readStream(FILE *commandStream) {
-    if (!commandStream) {
+std::optional<std::wstring> ExecutionEngine::pollCommandOutput() {
+    if (!_outputStream) {
         return std::nullopt;
     }
 
     try {
-        constexpr size_t bytesToRead = 1024 * 8;
+        constexpr size_t bytesToRead = 1024 * 16;
         std::vector<char> buffer(bytesToRead);
         std::array<char, 8> missingUtfBytesBuffer{};
-        char *bufferPointer = buffer.data();
+        char* bufferPointer = buffer.data();
         std::size_t bytesRead;
 
-        bytesRead = fread_unlocked(bufferPointer, sizeof(char), bytesToRead, commandStream);
+        bytesRead = fread_unlocked(bufferPointer, sizeof(char), bytesToRead, _outputStream);
 
         if (bytesRead == 0) {
             return std::nullopt;
@@ -51,7 +47,7 @@ std::optional<std::wstring> ExecutionEngine::readStream(FILE *commandStream) {
 
         while (!(lastChar == '\n' || lastChar == '\0')) {
             // Last byte may not complete a Unicode symbol, so we need to keep reading until \n or \0
-            bytesRead = fread_unlocked(missingUtfBytesBuffer.data(), sizeof(char), 1, commandStream);
+            bytesRead = fread_unlocked(missingUtfBytesBuffer.data(), sizeof(char), 1, _outputStream);
 
             if (bytesRead == 0) {
                 break;
@@ -62,18 +58,23 @@ std::optional<std::wstring> ExecutionEngine::readStream(FILE *commandStream) {
             buffer.push_back(lastChar);
         }
 
-        auto str = conv.from_bytes(buffer.data());
+        auto str = _wideConverter->from_bytes(buffer.data());
 
         return std::optional<std::wstring>{str};
-    } catch (const std::range_error &e) {
-        auto str = conv.from_bytes(e.what());
+    } catch (const std::range_error& e) {
+        auto str = _wideConverter->from_bytes(e.what());
 
         return std::optional<std::wstring>{str};
     }
 }
 
-void ExecutionEngine::closeStream(FILE *commandStream) {
-    if (commandStream) {
-        pclose(commandStream);
-    }
+void ExecutionEngine::executeCommand(const std::wstring& command) {
+    auto length = command.length();
+    char str[length + 1];
+
+    wcstombs(str, command.c_str(), length);
+
+    str[length] = '\0';
+
+    _outputStream = popen(str, "r");
 }

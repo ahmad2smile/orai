@@ -9,30 +9,19 @@
 
 #include "../Utils/InputUtils.h"
 
-Text::Text(const sf::Font &font, sf::RenderWindow &window) : Text(L"", font, window) {
+Text::Text(std::wstring&& value, const sf::Font& font, const sf::RenderWindow& window, sf::FloatRect bounds)
+    : Text(std::move(value), font, 18, window, bounds) {}
+
+Text::Text(std::wstring&& value, const sf::Font& font, unsigned int fontSize, const sf::RenderWindow& window,
+           sf::FloatRect bounds)
+    : _text(new sf::Text(value, font, fontSize)), _bounds(bounds), _window(window) {
+    _text->setPosition({_bounds.left, _bounds.top});
+    setString(value);
 }
 
-Text::Text(std::wstring &&value, const sf::Font &font, sf::RenderWindow &window) : Text(std::move(value), font,
-                                                                                        window,
-                                                                                        sf::FloatRect{0, 0, 1.0,
-                                                                                                      1.0}) {
-
-}
-
-Text::Text(const std::wstring &&value, const sf::Font &font, sf::RenderWindow &window, sf::FloatRect bounds) :
-        _value(value),
-        _font(font),
-        _bounds(bounds),
-        _window(window) {
-    Text::setFont(_font);
-    Text::setCharacterSize(_fontSize);
-    Text::setPosition({_bounds.left, _bounds.top});
-    setString(_value);
-}
-
-void Text::onEvent(const sf::Event *event) {
+void Text::onEvent(const sf::Event* event) {
     if (event->type == sf::Event::Resized) {
-        auto value = Text::getString().toWideString();
+        auto value = _text->getString().toWideString();
 
         for (int i = 0; i < value.size(); ++i) {
             if (value[i] == L'\n') {
@@ -44,81 +33,55 @@ void Text::onEvent(const sf::Event *event) {
     }
 }
 
-void Text::setMargin(sf::Vector2f value) {
-    _margin = value;
-
-    auto pos = Text::getPosition();
-
-    pos.x += _margin.x;
-    pos.y += _margin.y;
-
-    Text::setPosition(pos);
+sf::Vector2f Text::getPosition() {
+    return _text->getPosition();
 }
 
-sf::Vector2f Text::getPosition() {
-    auto value = Transformable::getPosition();
+std::wstring Text::getString() {
+    return _text->getString();
+}
 
-    value.x -= _margin.x;
-    value.y -= _margin.y;
-
-    return value;
+void Text::setSize(sf::Vector2f value) {
+    _bounds.height = value.y > 0 ? value.y : _bounds.height;
+    _bounds.width = value.x > 0 ? value.x : _bounds.width;
 }
 
 void Text::setPosition(sf::Vector2f value) {
-    value.x += _margin.x;
-    value.y += _margin.y;
-
-    Transformable::setPosition(value);
+    _text->setPosition(value);
 }
 
-void Text::setString(std::wstring &value) {
-    const unsigned int lineWidth = (unsigned int) _bounds.width * _window.getSize().x;
+void Text::setString(std::wstring& value) {
+    if (value.length() > 2) {
+        float charWidth = _text->findCharacterPos(1).x - _text->findCharacterPos(0).x;
 
-    InputUtils::widthBoundedString(value, lineWidth, _fontSize);
+        InputUtils::widthBoundedString(value, _bounds.width, charWidth);
+    }
 
-    _value = value;
-
-    sf::Text::setString(value);
+    _text->setString(value);
 }
 
-//std::string stringToWstring(const std::string &str) {
-//    std::string wstr;
-//    wstr.reserve(str.length());
-//
-//    const char *src = str.c_str();
-//    wchar_t dst[str.length() + 1];
-//    size_t result = mbstowcs(dst, src, str.length() + 1);
-//
-//    if (result != static_cast<size_t>(-1)) {
-//        dst[result] = L'\0'; // Ensure null termination
-//
-//        return wstr.assign(dst, result); // Use return value to convert wchar_t* to std::string (C++11)
-//    } else {
-//        throw std::runtime_error("Conversion failed");
-//    }
-//}
-
-//void Text::setString(std::string &string) {
-////    std::string wide = stringToWstring(string);
-//
-//    onFrame(string);
-//}
-
-void Text::appendString(const std::wstring &string) {
-    _value.append(string);
-
-    setString(_value);
+void Text::setCharacterSize(unsigned int fontSize) {
+    _text->setCharacterSize(fontSize);
 }
 
-//void Text::appendString(const std::wstring &string) {
-//    _value.append(string);
-//
-//    onFrame(_value);
-//}
+void Text::setStyle(sf::Text::Style style) {
+    _text->setStyle(style);
+}
 
+void Text::appendString(const std::wstring& string) {
+    setString(_text->getString().toWideString().append(string));
+}
+
+sf::Rect<float> Text::getLocalBounds() {
+    auto localBounds = _text->getLocalBounds();
+
+    return localBounds.height > _bounds.height ? _text->getLocalBounds() : _bounds;
+}
 
 void Text::clear() {
-    _value.clear();
+    _text->setString("");
+}
 
-    sf::Text::setString("");
+void Text::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    target.draw(*_text);
 }

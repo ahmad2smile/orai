@@ -31,6 +31,9 @@ add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs}
 
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
 
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+include(CPack)
+
 enable_testing()
 
 find_package(SFML REQUIRED COMPONENTS system window graphics)

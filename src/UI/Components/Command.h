@@ -14,28 +14,28 @@
 
 class Command : public sf::Drawable {
 public:
-    explicit Command(ExecutionEngine &engine, const sf::Font &font, sf::RenderWindow &window);
+    explicit Command(ExecutionEngine& engine, const sf::Font& font, sf::RenderWindow& window);
 
     ~Command() override;
-    
-    void onEvent(const sf::Event *event);
+
+    void onEvent(const sf::Event* event);
 
     void onFrame();
 
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 private:
-    Input *_input;
-    ExecutionEngine &_engine;
-    sf::RenderWindow &_window;
-    Scrollable *_scrollable;
-    Text *_output;
-    const sf::Font &_font;
+    Input* _input;
+    ExecutionEngine& _engine;
+    const sf::RenderWindow& _window;
+    Scrollable* _scrollable;
+    Text* _output;
+    const sf::Font& _font;
     bool _executing;
-    FILE* _outputStream;
+    float _scrollSpeed;
 
-    Text *createOutput(std::wstring &&value) const;
+    Text* createOutput(std::wstring&& value) const;
 };
 
 
-#endif //ORAI_COMMAND_H
+#endif//ORAI_COMMAND_H
