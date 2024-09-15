@@ -1,4 +1,6 @@
-# Orai
+# Orai (WIP)
+
+Only [SFML](https://github.com/SFML/SFML) dependent Terminal Emulator.
 
 ### Run
 
@@ -13,3 +15,6 @@
     ```bash
     ./orai
     ```
+
+
+![image](https://github.com/user-attachments/assets/cd1f79c6-bcc6-48b3-ba0f-3788279e8471)
