@@ -1,6 +1,9 @@
 {
+  "name": "orai",
+  "version": "0.0.1",
   "dependencies": [
+    "gtest",
     "sfml",
-    "gtest"
+    "sqlite3"
   ]
 }

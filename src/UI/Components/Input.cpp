@@ -8,53 +8,55 @@
 
 #include "../Utils/InputUtils.h"
 
-Input::Input(std::wstring&& value, const sf::Font& font, const sf::RenderWindow& window, sf::FloatRect bounds)
-    : Text(std::move(value), font, window, bounds) {
-
-    _border = new sf::RectangleShape(sf::Vector2f(bounds.width, bounds.height));
+Input::Input(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
+             const sf::Vector2f& size, const unsigned int fontSize)
+    : Text(window, font, std::move(value), position, size, fontSize) {
+    _border = new sf::RectangleShape(size);
     _border->setFillColor(sf::Color(15, 34, 52, 255));
     _border->setOutlineColor(sf::Color(54, 56, 57));
     _border->setOutlineThickness(2.f);
-    _border->setPosition({_bounds.left + 6, _bounds.top});
+    _border->setPosition({size.x + 6, size.y});
 }
 
 Input::~Input() {
     delete _border;
 }
 
-void Input::setSize(sf::Vector2f value) {
-    _border->setSize(sf::Vector2f(value.x - 8, value.y - 8));
+void Input::setSize(const sf::Vector2f& value) {
+    Text::setSize(value);
+    _border->setSize(value);
 }
 
-void Input::setPosition(sf::Vector2f value) {
-    Text::setPosition({value.x + 8, value.y + 8});
-
-    _border->setPosition({value.x + 6, value.y});
+void Input::setPosition(const sf::Vector2f& value) {
+    Text::setPosition(value);
+    _border->setPosition(value);
 }
 
 void Input::onEvent(const sf::Event* event) {
     Text::onEvent(event);
 
     if (event->type == sf::Event::TextEntered) {
-        auto value = Text::getString();
-        const size_t value_size = value.length();
+        auto value = getString();
+        const size_t valueSize = value.size();
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace)) {
             if (!value.empty()) {
-                value.erase(value_size - 1);
+                value.erase(valueSize - 1);
 
-                Text::setString(value);
+                setString(value);
             }
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
-            if (const auto new_index = value_size - 1; new_index > 0) {
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) &&
+                   !(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) ||
+                     sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))) {
+            if (const auto new_index = valueSize - 1; new_index > 0) {
                 value.push_back(L'\n');
 
-                Text::setString(value);
+                setString(value);
             }
         } else if (event->text.unicode < 128) {
             value.push_back(static_cast<char>(event->text.unicode));
 
-            Text::setString(value);
+            setString(value);
         }
     }
 }

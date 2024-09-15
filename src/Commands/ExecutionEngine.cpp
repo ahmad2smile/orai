@@ -9,11 +9,10 @@
 #include <vector>
 #include <optional>
 #include "ExecutionEngine.h"
-#include <cstdlib>
 
 
-ExecutionEngine::ExecutionEngine()
-    : _outputStream(nullptr), _currentWorkingDir("~/"),
+ExecutionEngine::ExecutionEngine(const DbContext& dbContext)
+    : _outputStream(nullptr), _dbContext(dbContext), _currentWorkingDir("~/"),
       _wideConverter(new std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>()) {}
 
 ExecutionEngine::~ExecutionEngine() {
@@ -24,7 +23,7 @@ ExecutionEngine::~ExecutionEngine() {
     delete _wideConverter;
 }
 
-std::optional<std::wstring> ExecutionEngine::pollCommandOutput() {
+std::optional<std::wstring> ExecutionEngine::pollCommandOutput() const {
     if (!_outputStream) {
         return std::nullopt;
     }
@@ -34,9 +33,8 @@ std::optional<std::wstring> ExecutionEngine::pollCommandOutput() {
         std::vector<char> buffer(bytesToRead);
         std::array<char, 8> missingUtfBytesBuffer{};
         char* bufferPointer = buffer.data();
-        std::size_t bytesRead;
 
-        bytesRead = fread_unlocked(bufferPointer, sizeof(char), bytesToRead, _outputStream);
+        std::size_t bytesRead = fread_unlocked(bufferPointer, sizeof(char), bytesToRead, _outputStream);
 
         if (bytesRead == 0) {
             return std::nullopt;
@@ -60,21 +58,16 @@ std::optional<std::wstring> ExecutionEngine::pollCommandOutput() {
 
         auto str = _wideConverter->from_bytes(buffer.data());
 
-        return std::optional<std::wstring>{str};
+        return std::optional{str};
     } catch (const std::range_error& e) {
         auto str = _wideConverter->from_bytes(e.what());
 
-        return std::optional<std::wstring>{str};
+        return std::optional{str};
     }
 }
 
 void ExecutionEngine::executeCommand(const std::wstring& command) {
-    auto length = command.length();
-    char str[length + 1];
+    const auto str = _wideConverter->to_bytes(command);
 
-    wcstombs(str, command.c_str(), length);
-
-    str[length] = '\0';
-
-    _outputStream = popen(str, "r");
+    _outputStream = popen(str.c_str(), "r");
 }

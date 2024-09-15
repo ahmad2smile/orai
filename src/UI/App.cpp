@@ -3,24 +3,24 @@
 //
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-
-#include "App.h"
-
+#include <algorithm>
 #include <iostream>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include "App.h"
 #include "Components/Command.h"
 
 namespace UI {
     App::App() = default;
 
-    sf::RenderWindow *App::initialize(const int width, const int height, const char *title) {
+    sf::RenderWindow* App::initialize(const int width, const int height, const char* title) {
         const auto window = new sf::RenderWindow(sf::VideoMode(width, height), title);
 
-        // NOTE: To avoid screen tearning
+        window->setView(sf::View(sf::FloatRect(0, 0, static_cast<float>(width), static_cast<float>(height))));
+
+        // NOTE: To avoid screen tearing
         window->setVerticalSyncEnabled(true);
         window->setFramerateLimit(120);
-
 
         if (!_font.loadFromFile("FiraCodeNerdFont-Light.ttf")) {
             // error...
@@ -30,10 +30,13 @@ namespace UI {
         return window;
     }
 
-    void App::run(sf::RenderWindow &window) const {
-        auto engine = new ExecutionEngine();
+    void App::run(sf::RenderWindow& window) const {
+        DbContext dbContext;
+        dbContext.initTables();
 
-        Command command(*engine, _font, window);
+        const auto engine = new ExecutionEngine(dbContext);
+
+        Command command(window, _font, dbContext, *engine);
 
         while (window.isOpen()) {
             sf::Event event{};
@@ -44,16 +47,15 @@ namespace UI {
                 }
 
                 if (event.type == sf::Event::Resized) {
-                    window.setView(
-                            sf::View(sf::FloatRect(0, 0, static_cast<float>(event.size.width),
-                                                   static_cast<float>(event.size.height))));
+                    // window.setView(sf::View(sf::FloatRect(0, 0, static_cast<float>(event.size.width),
+                    //                                       static_cast<float>(event.size.height))));
                 }
 
                 command.onEvent(&event);
             }
 
             command.onFrame();
-            
+
             window.clear(sf::Color(2, 5, 23));
 
             window.draw(command);
@@ -61,4 +63,4 @@ namespace UI {
             window.display();
         }
     }
-} // UI
+} // namespace UI

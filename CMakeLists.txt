@@ -8,6 +8,7 @@ include_directories(.)
 include(~/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
+find_package(SQLite3 REQUIRED)
 
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
@@ -27,9 +28,15 @@ add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs}
         src/UI/Components/Command.h
         src/Commands/ExecutionEngine.cpp
         src/Commands/ExecutionEngine.h
+        src/UI/Components/TextList.cpp
+        src/UI/Components/TextList.h
+        src/UI/Components/Component.cpp
+        src/UI/Components/Component.h
+        src/Persistance/DbContext.cpp
+        src/Persistance/DbContext.h
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
+target_link_libraries(${PROJECT_NAME} PRIVATE  SQLite::SQLite3 sfml-system sfml-network sfml-graphics sfml-window)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 include(CPack)
@@ -37,13 +44,20 @@ include(CPack)
 enable_testing()
 
 find_package(SFML REQUIRED COMPONENTS system window graphics)
+find_package(SQLite3 REQUIRED)
 
 add_executable(test_target ${TESTS} ${SOURCES} ${HEADERs}
         src/UI/Components/Command.cpp
-        src/UI/Components/Command.h)
+        src/UI/Components/Command.h
+        src/UI/Components/TextList.cpp
+        src/UI/Components/TextList.h
+        src/UI/Components/Component.cpp
+        src/UI/Components/Component.h
+        src/Persistance/DbContext.cpp
+        src/Persistance/DbContext.h)
 
 target_include_directories(test_target PRIVATE ${SFML_INCLUDE_DIRS})
-target_link_libraries(test_target PRIVATE GTest::gtest GTest::gtest_main sfml-system sfml-window sfml-graphics)
+target_link_libraries(test_target PRIVATE GTest::gtest GTest::gtest_main SQLite::SQLite3 sfml-system sfml-window sfml-graphics)
 
 include(GoogleTest)
 

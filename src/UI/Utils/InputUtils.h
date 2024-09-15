@@ -9,7 +9,7 @@
 
 class InputUtils {
 public:
-    static void widthBoundedString(std::wstring &value, float lineWidth, float charSize);
+    static unsigned long int widthBoundedString(std::wstring& value, float lineWidth, float charSize);
 };
 
 

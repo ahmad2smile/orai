@@ -7,24 +7,27 @@
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include "Component.h"
 
-class Scrollable : public sf::Drawable {
+class Scrollable : public Component {
 public:
-    explicit Scrollable(sf::FloatRect bounds, sf::RenderWindow &window);
+    explicit Scrollable(const sf::Font& font, sf::RenderWindow& window, sf::FloatRect bounds);
+    explicit Scrollable(const sf::Font& font, sf::RenderWindow& window, sf::FloatRect bounds, std::vector<sf::Drawable*>* items);
 
     ~Scrollable() override;
 
-    void addItem(sf::Drawable *item) const;
+    void addItem(sf::Drawable* item) const;
+    
+    void onFrame() override;
 
-    void update(const sf::Event *event) const;
+    void onEvent(const sf::Event *event) override;
 
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 private:
-    sf::View *_view;
-    std::vector<sf::Drawable *> *_items;
+    sf::View* _view;
+    std::vector<sf::Drawable*>* _items;
     sf::FloatRect _bounds;
-    sf::RenderWindow &_window;
 };
 
 

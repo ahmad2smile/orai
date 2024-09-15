@@ -10,32 +10,31 @@
 #include <SFML/Window/Event.hpp>
 #include "Input.h"
 #include "../../Commands/ExecutionEngine.h"
-#include "Scrollable.h"
+#include "TextList.h"
 
-class Command : public sf::Drawable {
+class Command final : public Component {
 public:
-    explicit Command(ExecutionEngine& engine, const sf::Font& font, sf::RenderWindow& window);
+    explicit Command(sf::RenderWindow& window, const sf::Font& font, DbContext& dbContext, ExecutionEngine& engine);
 
     ~Command() override;
 
-    void onEvent(const sf::Event* event);
+    void onEvent(const sf::Event* event) override;
 
-    void onFrame();
+    void onFrame() override;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 private:
-    Input* _input;
+    DbContext& _dbContext;
     ExecutionEngine& _engine;
-    const sf::RenderWindow& _window;
-    Scrollable* _scrollable;
     Text* _output;
-    const sf::Font& _font;
+    Input* _input;
+    TextList* _suggestions;
+    sf::View* _suggestionsView;
+
     bool _executing;
     float _scrollSpeed;
-
-    Text* createOutput(std::wstring&& value) const;
 };
 
 
-#endif//ORAI_COMMAND_H
+#endif //ORAI_COMMAND_H

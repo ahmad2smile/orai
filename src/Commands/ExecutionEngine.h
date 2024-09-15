@@ -9,17 +9,19 @@
 #include <sstream>
 #include <codecvt>
 #include <optional>
+#include "src/Persistance/DbContext.h"
 
 class ExecutionEngine {
 public:
-    ExecutionEngine();
+    explicit ExecutionEngine(const DbContext& dbContext);
     ~ExecutionEngine();
 
     void executeCommand(const std::wstring& command);
-    std::optional<std::wstring> pollCommandOutput();
+    [[nodiscard]] std::optional<std::wstring> pollCommandOutput() const;
 
 private:
     FILE* _outputStream;
+    const DbContext& _dbContext;
     std::string _currentWorkingDir;
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>* _wideConverter;
 };

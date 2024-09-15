@@ -4,11 +4,12 @@
 
 #include "InputUtils.h"
 
-void InputUtils::widthBoundedString(std::wstring &value, float lineWidth, float charSize) {
+unsigned long int InputUtils::widthBoundedString(std::wstring &value, const float lineWidth, const float charSize) {
     const float maxCharsPerLine = lineWidth / charSize;
     float lineLength = 0;
     const auto size = value.size();
     int lastSpaceIndex = 0;
+    size_t lines = 1;
 
     for (int i = 0; i < size; ++i) {
         const auto c = value[i];
@@ -16,15 +17,19 @@ void InputUtils::widthBoundedString(std::wstring &value, float lineWidth, float 
 
         if (c == L'\n') {
             lineLength = 0;
+            lines++;
         } else if (lineLength >= maxCharsPerLine) {
             value.replace(lastSpaceIndex, 1, L"\n");
 
 
             lineLength = 0;
+            lines++;
         }
 
         if (c == L' ') {
             lastSpaceIndex = i;
         }
     }
+
+    return lines;
 }

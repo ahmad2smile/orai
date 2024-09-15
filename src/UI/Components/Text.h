@@ -6,44 +6,44 @@
 #define TEXT_H
 
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 
+#include "Component.h"
 
-class Text : public sf::Drawable {
+class Text : public Component {
 public:
-    explicit Text(std::wstring&& value, const sf::Font& font, const sf::RenderWindow& window, sf::FloatRect bounds);
+    explicit Text(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value = L"",
+                  const sf::Vector2f& position = {0, 0}, const sf::Vector2f& size = {18, 18},
+                  unsigned int fontSize = 18);
+    ~Text() override;
 
-    explicit Text(std::wstring&& value, const sf::Font& font, unsigned int fontSize, const sf::RenderWindow& window, sf::FloatRect bounds);
+    void onEvent(const sf::Event* event) override;
 
-    virtual void onEvent(const sf::Event* event);
+    [[nodiscard]] std::wstring getString() const;
 
-    sf::Vector2f getPosition();
-
-    std::wstring getString();
-    
-    sf::Rect<float> getLocalBounds();
-
-    virtual void setSize(sf::Vector2f value);
-
-    virtual void setPosition(sf::Vector2f value);
+    [[nodiscard]] sf::Rect<float> getLocalBounds() const;
 
     void setString(std::wstring& string);
-    
-    void setCharacterSize(unsigned int fontSize);
 
-    void setStyle(sf::Text::Style style);
+    void setCharacterSize(unsigned int fontSize) const;
+
+    void setStyle(sf::Text::Style style) const;
+
+    void setPadding(sf::Vector2f padding);
+
+    void setBackgroundColor(const sf::Color& color) const;
 
     void appendString(const std::wstring& string);
-    
-    void clear();
-    
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
+    void clear() const;
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 protected:
     sf::Text* _text;
-    sf::FloatRect _bounds;
-    const sf::RenderWindow& _window;
+    sf::RectangleShape* _background;
 };
 
 

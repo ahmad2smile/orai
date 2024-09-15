@@ -9,14 +9,17 @@
 
 #include "../Utils/InputUtils.h"
 
-Text::Text(std::wstring&& value, const sf::Font& font, const sf::RenderWindow& window, sf::FloatRect bounds)
-    : Text(std::move(value), font, 18, window, bounds) {}
-
-Text::Text(std::wstring&& value, const sf::Font& font, unsigned int fontSize, const sf::RenderWindow& window,
-           sf::FloatRect bounds)
-    : _text(new sf::Text(value, font, fontSize)), _bounds(bounds), _window(window) {
-    _text->setPosition({_bounds.left, _bounds.top});
+Text::Text(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
+           const sf::Vector2f& size, const unsigned int fontSize)
+    : Component(window, font, position, size), _text(new sf::Text(value, font, fontSize)),
+      _background(new sf::RectangleShape(size)) {
+    _background->setFillColor(sf::Color::Transparent);
     setString(value);
+}
+
+Text::~Text() {
+    delete _text;
+    delete _background;
 }
 
 void Text::onEvent(const sf::Event* event) {
@@ -33,55 +36,63 @@ void Text::onEvent(const sf::Event* event) {
     }
 }
 
-sf::Vector2f Text::getPosition() {
-    return _text->getPosition();
-}
-
-std::wstring Text::getString() {
+std::wstring Text::getString() const {
     return _text->getString();
 }
 
-void Text::setSize(sf::Vector2f value) {
-    _bounds.height = value.y > 0 ? value.y : _bounds.height;
-    _bounds.width = value.x > 0 ? value.x : _bounds.width;
-}
+void Text::setString(std::wstring& string) {
+    const auto size = getSize();
+    unsigned long int lines = 1;
 
-void Text::setPosition(sf::Vector2f value) {
-    _text->setPosition(value);
-}
+    if (string.length() > 2) {
+        const float charWidth = _text->findCharacterPos(1).x - _text->findCharacterPos(0).x;
 
-void Text::setString(std::wstring& value) {
-    if (value.length() > 2) {
-        float charWidth = _text->findCharacterPos(1).x - _text->findCharacterPos(0).x;
-
-        InputUtils::widthBoundedString(value, _bounds.width, charWidth);
+        lines = InputUtils::widthBoundedString(string, size.x, charWidth);
     }
 
-    _text->setString(value);
+    _text->setString(string);
+
+    setSize({size.x, size.y * static_cast<float>(lines)});
 }
 
-void Text::setCharacterSize(unsigned int fontSize) {
+void Text::setCharacterSize(const unsigned int fontSize) const {
     _text->setCharacterSize(fontSize);
 }
 
-void Text::setStyle(sf::Text::Style style) {
+void Text::setStyle(const sf::Text::Style style) const {
     _text->setStyle(style);
+}
+
+void Text::setBackgroundColor(const sf::Color& color) const {
+    _background->setFillColor(color);
 }
 
 void Text::appendString(const std::wstring& string) {
     setString(_text->getString().toWideString().append(string));
 }
 
-sf::Rect<float> Text::getLocalBounds() {
-    auto localBounds = _text->getLocalBounds();
+sf::Rect<float> Text::getLocalBounds() const {
+    auto position = getPosition();
+    auto size = getSize();
 
-    return localBounds.height > _bounds.height ? _text->getLocalBounds() : _bounds;
+    return {position.x, position.y, size.x, size.y};
 }
 
-void Text::clear() {
+void Text::clear() const {
     _text->setString("");
 }
 
 void Text::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    const auto position = getPosition();
+    const auto size = getSize();
+    const auto leftPadding = static_cast<float>(_text->getCharacterSize()) / 2.f;
+    // NOTE:                      available space for padding vertically  / 2.5f
+    const auto topPadding = (size.y - _text->getGlobalBounds().height) / 2.5f;
+
+    _background->setSize(size);
+    _background->setPosition(position);
+    _text->setPosition({position.x + leftPadding, position.y + topPadding});
+
+    target.draw(*_background);
     target.draw(*_text);
 }
