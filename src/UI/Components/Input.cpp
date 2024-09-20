@@ -54,9 +54,13 @@ void Input::onEvent(const sf::Event* event) {
                 setString(value);
             }
         } else if (event->text.unicode < 128) {
-            value.push_back(static_cast<char>(event->text.unicode));
+            const auto newChar = static_cast<char>(event->text.unicode);
 
-            setString(value);
+            if (std::isalpha(newChar)) {
+                value.push_back(newChar);
+
+                setString(value);
+            }
         }
     }
 }
