@@ -56,8 +56,9 @@ void TextList::clear() const {
 }
 
 void TextList::onEvent(const sf::Event* event) {
-    if (event->type == sf::Event::MouseWheelScrolled) {
-        const auto delta = (event->mouseWheelScroll.delta);
+    if (event->is<sf::Event::MouseWheelScrolled>()) {
+        const auto e = event->getIf<sf::Event::MouseWheelScrolled>();
+        const auto delta = (e->delta);
 
         float itemHeight = 60;
         const auto position = getPosition();
@@ -76,7 +77,9 @@ void TextList::onEvent(const sf::Event* event) {
             _scrollOffset = static_cast<float>(itemsCount) * itemHeight - position.y;
     }
 
-    if (event->type == sf::Event::KeyReleased && event->key.code == sf::Keyboard::Tab && !_items->empty()) {
+    const auto e = event->getIf<sf::Event::KeyReleased>();
+
+    if (e && e->code == sf::Keyboard::Key::Tab && !_items->empty()) {
         _selectedTextIndex = (_selectedTextIndex + 1) % _items->size();
 
         _selectedText = _selectedTextIndex != -1 ? _items->at(_selectedTextIndex) : nullptr;

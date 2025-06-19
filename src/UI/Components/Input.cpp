@@ -5,6 +5,7 @@
 #include "Input.h"
 
 #include <SFML/Window/Event.hpp>
+#include <SFML/Graphics.hpp>
 
 #include "../Utils/InputUtils.h"
 
@@ -35,26 +36,26 @@ void Input::setPosition(const sf::Vector2f& value) {
 void Input::onEvent(const sf::Event* event) {
     Text::onEvent(event);
 
-    if (event->type == sf::Event::TextEntered) {
+    if (const auto e = event->getIf<sf::Event::TextEntered>()) {
         auto value = getString();
         const size_t valueSize = value.size();
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Backspace)) {
             if (!value.empty()) {
                 value.erase(valueSize - 1);
 
                 setString(value);
             }
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) &&
-                   !(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) ||
-                     sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))) {
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) &&
+                   !(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) ||
+                     sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl))) {
             if (const auto new_index = valueSize - 1; new_index > 0) {
                 value.push_back(L'\n');
 
                 setString(value);
             }
-        } else if (event->text.unicode < 128) {
-            const auto newChar = static_cast<char>(event->text.unicode);
+        } else if (e->unicode < 128) {
+            const auto newChar = static_cast<char>(e->unicode);
 
             if (std::isalpha(newChar)) {
                 value.push_back(newChar);
@@ -65,7 +66,7 @@ void Input::onEvent(const sf::Event* event) {
     }
 }
 
-void Input::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+void Input::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
     target.draw(*_border);
 
     Text::draw(target, states);

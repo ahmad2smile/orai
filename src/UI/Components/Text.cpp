@@ -11,7 +11,7 @@
 
 Text::Text(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
            const sf::Vector2f& size, const unsigned int fontSize)
-    : Component(window, font, position, size), _text(new sf::Text(value, font, fontSize)),
+    : Component(window, font, position, size), _text(new sf::Text(font, value, fontSize)),
       _background(new sf::RectangleShape(size)) {
     _background->setFillColor(sf::Color::Transparent);
     setString(value);
@@ -23,7 +23,7 @@ Text::~Text() {
 }
 
 void Text::onEvent(const sf::Event* event) {
-    if (event->type == sf::Event::Resized) {
+    if (event->is<sf::Event::Resized>()) {
         auto value = _text->getString().toWideString();
 
         for (int i = 0; i < value.size(); ++i) {
@@ -75,7 +75,7 @@ sf::Rect<float> Text::getLocalBounds() const {
     auto position = getPosition();
     auto size = getSize();
 
-    return {position.x, position.y, size.x, size.y};
+    return {position, size};
 }
 
 void Text::clear() const {
@@ -86,8 +86,8 @@ void Text::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     const auto position = getPosition();
     const auto size = getSize();
     const auto leftPadding = static_cast<float>(_text->getCharacterSize()) / 2.f;
-    // NOTE:                      available space for padding vertically  / 2.5f
-    const auto topPadding = (size.y - _text->getGlobalBounds().height) / 2.5f;
+    // NOTE: available space for padding vertically / 2.5f
+    const auto topPadding = (size.y - _text->getGlobalBounds().size.y) / 2.5f;
 
     _background->setSize(size);
     _background->setPosition(position);

@@ -28,7 +28,7 @@ Command::Command(sf::RenderWindow& window, const sf::Font& font, DbContext& dbCo
     _suggestionsView = new sf::View();
     _suggestionsView->setSize(suggestionsSize);
     _suggestionsView->setCenter(suggestionsSize / 2.f);
-    _suggestionsView->setViewport(sf::FloatRect(0.125, 0.125, 0.75, 0.75));
+    _suggestionsView->setViewport(sf::FloatRect({0.125, 0.125}, {0.75, 0.75}));
 }
 
 Command::~Command() {
@@ -52,8 +52,8 @@ void Command::onFrame() {
 
         _output->appendString(output.value());
         _output->setPosition({_output->getPosition().x, static_cast<float>(windowSize.y) -
-                                                                _output->getLocalBounds().height -
-                                                                _input->getLocalBounds().height});
+                                                                _output->getLocalBounds().size.y -
+                                                                _input->getLocalBounds().size.y});
     }
 }
 
@@ -68,7 +68,7 @@ void Command::onEvent(const sf::Event* event) {
 
     const auto commandStr = _input->getString();
 
-    if (event->type == sf::Event::TextEntered) {
+    if (event->is<sf::Event::TextEntered>()) {
         if (commandStr.length() > 1) {
             auto items = _dbContext.getSuggestions(commandStr);
             _suggestions->setItems(items);
@@ -77,9 +77,9 @@ void Command::onEvent(const sf::Event* event) {
         }
     }
 
-    if (!_executing &&
-        sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) & (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) ||
-                                                           sf::Keyboard::isKeyPressed(sf::Keyboard::RControl))) {
+    if (!_executing && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) &
+                               (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) ||
+                                sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl))) {
 
         _input->clear();
 
@@ -96,22 +96,23 @@ void Command::onEvent(const sf::Event* event) {
         }
     }
 
-    if (!_executing && (event->type == sf::Event::TextEntered || event->type == sf::Event::Resized)) {
+    if (!_executing && (event->is<sf::Event::TextEntered>() || event->is<sf::Event::Resized>())) {
         const auto inputBounds = _input->getLocalBounds();
         constexpr auto bottomMargin = 10.f;
 
-        _input->setPosition({inputBounds.left, windowHeight - inputBounds.height - bottomMargin});
-        _input->setSize(sf::Vector2f(windowWidth - 20, inputBounds.height));
+        _input->setPosition({inputBounds.position.x, windowHeight - inputBounds.position.y - bottomMargin});
+        _input->setSize(sf::Vector2f(windowWidth - 20, inputBounds.position.y));
     }
 
-    if (event->type == sf::Event::MouseWheelScrolled) {
-        const auto delta = event->mouseWheelScroll.delta * _scrollSpeed;
+    if (event->is<sf::Event::MouseWheelScrolled>()) {
+        const auto e = event->getIf<sf::Event::MouseWheelScrolled>();
+        const auto delta = e->delta * _scrollSpeed;
         auto outputPosition = _output->getPosition();
 
         _output->setPosition({outputPosition.x, outputPosition.y + delta});
 
         // Update the view position
-        _suggestionsView->setCenter(windowWidth / 2, windowHeight / 2);
+        _suggestionsView->setCenter({windowWidth / 2, windowHeight / 2});
     }
 }
 

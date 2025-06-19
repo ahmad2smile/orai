@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "dependencies": [
     "gtest",
-    "sfml",
-    "sqlite3"
+    "sqlite3",
+    {
+      "name": "sfml",
+      "version>=": "3.0.0#1"
+    }
   ]
 }

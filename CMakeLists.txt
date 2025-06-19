@@ -1,13 +1,13 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.28)
 project(orai)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_COMPILER=clang)
 
 include_directories(.)
-include(~/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
+#include(~/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
-find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
+find_package(SFML 3 COMPONENTS System Window Network Graphics CONFIG REQUIRED)
 find_package(SQLite3 REQUIRED)
 
 find_package(GTest REQUIRED)
@@ -19,7 +19,7 @@ file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE TESTS tests/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h)
 
-configure_file(assets/FiraCodeNerdFont-Light.ttf ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(assets/FiraCodeNerdFont-Light.ttf ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE} COPYONLY)
 
 add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs}
         src/UI/Components/Scrollable.cpp
@@ -36,15 +36,12 @@ add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs}
         src/Persistance/DbContext.h
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE  SQLite::SQLite3 sfml-system sfml-network sfml-graphics sfml-window)
+target_link_libraries(${PROJECT_NAME} PRIVATE  SQLite::SQLite3 SFML::Network SFML::Graphics SFML::Window SFML::System)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 include(CPack)
 
 enable_testing()
-
-find_package(SFML REQUIRED COMPONENTS system window graphics)
-find_package(SQLite3 REQUIRED)
 
 add_executable(test_target ${TESTS} ${SOURCES} ${HEADERs}
         src/UI/Components/Command.cpp
@@ -57,7 +54,7 @@ add_executable(test_target ${TESTS} ${SOURCES} ${HEADERs}
         src/Persistance/DbContext.h)
 
 target_include_directories(test_target PRIVATE ${SFML_INCLUDE_DIRS})
-target_link_libraries(test_target PRIVATE GTest::gtest GTest::gtest_main SQLite::SQLite3 sfml-system sfml-window sfml-graphics)
+target_link_libraries(test_target PRIVATE GTest::gtest GTest::gtest_main SQLite::SQLite3 SFML::Network SFML::Graphics SFML::Window SFML::System)
 
 include(GoogleTest)
 

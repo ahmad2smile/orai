@@ -4,12 +4,17 @@
 
 #include <fstream>
 #include <array>
-#include <memory>
 #include <locale>
 #include <vector>
 #include <optional>
 #include "ExecutionEngine.h"
 
+// TODO: Use abstracted api
+#ifdef _WIN32
+#define popen _popen
+#define fread_unlocked fread
+#define pclose _pclose
+#endif
 
 ExecutionEngine::ExecutionEngine(const DbContext& dbContext)
     : _outputStream(nullptr), _dbContext(dbContext), _currentWorkingDir("~/"),
