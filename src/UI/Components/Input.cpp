@@ -10,27 +10,36 @@
 #include "../Utils/InputUtils.h"
 
 Input::Input(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
-             const sf::Vector2f& size, const unsigned int fontSize)
-    : Text(window, font, std::move(value), position, size, fontSize) {
-    _border = new sf::RectangleShape(size);
+             const sf::Vector2f& size, const sf::Vector2f& margin, const unsigned int fontSize)
+    : Text(window, font, std::move(value), position + margin, size - margin * 2.f, fontSize) {
+
+    _border = new sf::RectangleShape(size - margin * 2.f);
     _border->setFillColor(sf::Color(15, 34, 52, 255));
     _border->setOutlineColor(sf::Color(54, 56, 57));
     _border->setOutlineThickness(2.f);
-    _border->setPosition({size.x + 6, size.y});
+    _border->setPosition(position + margin);
+
+    _margin = new sf::Vector2f(margin);
 }
 
 Input::~Input() {
     delete _border;
+    delete _margin;
 }
 
 void Input::setSize(const sf::Vector2f& value) {
-    Text::setSize(value);
-    _border->setSize(value);
+    Text::setSize(value - *_margin * 2.f);
+    _border->setSize(value - *_margin * 2.f);
 }
 
+sf::Vector2f Input::getSize() const {
+    return Text::getSize() + *_margin * 2.f;
+}
+
+
 void Input::setPosition(const sf::Vector2f& value) {
-    Text::setPosition(value);
-    _border->setPosition(value);
+    Text::setPosition(value + *_margin);
+    _border->setPosition(value + *_margin);
 }
 
 void Input::onEvent(const sf::Event* event) {

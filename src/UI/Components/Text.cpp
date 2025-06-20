@@ -11,20 +11,24 @@
 
 Text::Text(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
            const sf::Vector2f& size, const unsigned int fontSize)
-    : Component(window, font, position, size), _text(new sf::Text(font, value, fontSize)),
-      _background(new sf::RectangleShape(size)) {
+    : Component(window, font, position, size), _sfText(new sf::Text(font, value, fontSize)),
+      _originalSize(new sf::Vector2f(size)), _currentLines(1), _background(new sf::RectangleShape(size)) {
+    _sfText->setPosition(position);
+    _background->setSize(size);
+    _background->setPosition(position);
     _background->setFillColor(sf::Color::Transparent);
     setString(value);
 }
 
 Text::~Text() {
-    delete _text;
+    delete _sfText;
     delete _background;
+    delete _originalSize;
 }
 
 void Text::onEvent(const sf::Event* event) {
     if (event->is<sf::Event::Resized>()) {
-        auto value = _text->getString().toWideString();
+        auto value = _sfText->getString().toWideString();
 
         for (int i = 0; i < value.size(); ++i) {
             if (value[i] == L'\n') {
@@ -37,30 +41,31 @@ void Text::onEvent(const sf::Event* event) {
 }
 
 std::wstring Text::getString() const {
-    return _text->getString();
+    return _sfText->getString();
 }
 
 void Text::setString(std::wstring& string) {
-    const auto size = getSize();
-    unsigned long int lines = 1;
+    auto size = Component::getSize();
 
     if (string.length() > 2) {
-        const float charWidth = _text->findCharacterPos(1).x - _text->findCharacterPos(0).x;
+        const float charWidth = _sfText->findCharacterPos(1).x - _sfText->findCharacterPos(0).x;
 
-        lines = InputUtils::widthBoundedString(string, size.x, charWidth);
+        const float lines = InputUtils::widthBoundedString(string, size.x, charWidth);
+
+        size.y = _originalSize->y + _sfText->getCharacterSize() * lines;
     }
 
-    _text->setString(string);
+    _sfText->setString(string);
 
-    setSize({size.x, size.y * static_cast<float>(lines)});
+    Component::setSize(size);
 }
 
 void Text::setCharacterSize(const unsigned int fontSize) const {
-    _text->setCharacterSize(fontSize);
+    _sfText->setCharacterSize(fontSize);
 }
 
 void Text::setStyle(const sf::Text::Style style) const {
-    _text->setStyle(style);
+    _sfText->setStyle(style);
 }
 
 void Text::setBackgroundColor(const sf::Color& color) const {
@@ -68,7 +73,16 @@ void Text::setBackgroundColor(const sf::Color& color) const {
 }
 
 void Text::appendString(const std::wstring& string) {
-    setString(_text->getString().toWideString().append(string));
+    setString(_sfText->getString().toWideString().append(string));
+}
+
+void Text::setSize(const sf::Vector2f& value) {
+    Component::setSize(value);
+}
+
+void Text::setPosition(const sf::Vector2f& value) {
+    _sfText->setPosition(value);
+    Component::setPosition(value);
 }
 
 sf::Rect<float> Text::getLocalBounds() const {
@@ -79,20 +93,20 @@ sf::Rect<float> Text::getLocalBounds() const {
 }
 
 void Text::clear() const {
-    _text->setString("");
+    _sfText->setString("");
 }
 
 void Text::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    const auto position = getPosition();
-    const auto size = getSize();
-    const auto leftPadding = static_cast<float>(_text->getCharacterSize()) / 2.f;
-    // NOTE: available space for padding vertically / 2.5f
-    const auto topPadding = (size.y - _text->getGlobalBounds().size.y) / 2.5f;
-
-    _background->setSize(size);
-    _background->setPosition(position);
-    _text->setPosition({position.x + leftPadding, position.y + topPadding});
+    // const auto position = getPosition();
+    // const auto size = getSize();
+    // // const auto leftPadding = 0 * (static_cast<float>(_text->getCharacterSize()) / 2.f);
+    // // // NOTE: available space for padding vertically / 2.5f
+    // // const auto topPadding = 0 * ((size.y - _text->getGlobalBounds().size.y) / 2.5f);
+    // //
+    // _background->setSize(size);
+    // _background->setPosition(position);
+    // _text->setPosition(position);
 
     target.draw(*_background);
-    target.draw(*_text);
+    target.draw(*_sfText);
 }

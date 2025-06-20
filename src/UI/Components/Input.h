@@ -14,11 +14,13 @@ class Input final : public Text {
 public:
     explicit Input(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value = L"",
                    const sf::Vector2f& position = {0, 0}, const sf::Vector2f& size = {18, 18},
-                   unsigned int fontSize = 18);
+                   const sf::Vector2f& margin = {10, -10}, unsigned int fontSize = 18);
 
     ~Input() override;
 
     void setSize(const sf::Vector2f& value) override;
+
+    sf::Vector2f getSize() const;
 
     void setPosition(const sf::Vector2f& value) override;
 
@@ -28,6 +30,7 @@ public:
 
 private:
     sf::RectangleShape* _border;
+    sf::Vector2f* _margin;
 };
 
 #endif // INPUT_H

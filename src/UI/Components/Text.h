@@ -37,12 +37,18 @@ public:
 
     void appendString(const std::wstring& string);
 
+    void setSize(const sf::Vector2f& value) override;
+
+    void setPosition(const sf::Vector2f& value) override;
+
     void clear() const;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 protected:
-    sf::Text* _text;
+    sf::Text* _sfText;
+    sf::Vector2f* _originalSize;
+    unsigned int _currentLines;
     sf::RectangleShape* _background;
 };
 

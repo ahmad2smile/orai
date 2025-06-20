@@ -12,10 +12,10 @@ Command::Command(sf::RenderWindow& window, const sf::Font& font, DbContext& dbCo
     const auto windowHeight = static_cast<float>(windowSize.y);
     const auto windowWidth = static_cast<float>(windowSize.x);
 
-    const auto inputSize = sf::Vector2f(windowWidth - 10, 60);
-    const auto inputPosition = sf::Vector2f(10, windowHeight - inputSize.y - 10);
+    const auto inputSize = sf::Vector2f(windowWidth, 60);
+    const auto inputPosition = sf::Vector2f(0, windowHeight - inputSize.y);
 
-    _input = new Input(window, font, L"", inputPosition, inputSize, 24);
+    _input = new Input(window, font, L"", inputPosition, inputSize, {10, 10}, 25);
     _input->setStyle(sf::Text::Bold);
 
     _output = new Text(window, font);
@@ -97,11 +97,10 @@ void Command::onEvent(const sf::Event* event) {
     }
 
     if (!_executing && (event->is<sf::Event::TextEntered>() || event->is<sf::Event::Resized>())) {
-        const auto inputBounds = _input->getLocalBounds();
-        constexpr auto bottomMargin = 10.f;
+        const auto inputHeight = _input->getSize().y;
 
-        _input->setPosition({inputBounds.position.x, windowHeight - inputBounds.position.y - bottomMargin});
-        _input->setSize(sf::Vector2f(windowWidth - 20, inputBounds.position.y));
+        _input->setPosition({0, windowHeight - inputHeight});
+        _input->setSize({windowWidth, inputHeight});
     }
 
     if (event->is<sf::Event::MouseWheelScrolled>()) {

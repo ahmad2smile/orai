@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_COMPILER=clang)
 
 include_directories(.)
-#include(~/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
+include(~/.vcpkg-clion/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
 find_package(SFML 3 COMPONENTS System Window Network Graphics CONFIG REQUIRED)
 find_package(SQLite3 REQUIRED)

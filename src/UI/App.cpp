@@ -13,13 +13,16 @@ namespace UI {
     App::App() = default;
 
     sf::RenderWindow* App::initialize(const unsigned int width, const unsigned int height, const char* title) {
-        const auto window = new sf::RenderWindow(sf::VideoMode({width, height}), title);
+        const auto video_mode = sf::VideoMode::getDesktopMode();
+        const auto size = sf::Vector2u{video_mode.size.x / 2, video_mode.size.y / 2};
+
+        const auto window = new sf::RenderWindow(sf::VideoMode({size}), title);
 
         window->setView(sf::View(sf::FloatRect({0, 0}, {static_cast<float>(width), static_cast<float>(height)})));
 
         // NOTE: To avoid screen tearing
         window->setVerticalSyncEnabled(true);
-        window->setFramerateLimit(120);
+        window->setFramerateLimit(60);
 
         if (!_font.openFromFile("FiraCodeNerdFont-Light.ttf")) {
             // error...
@@ -43,9 +46,9 @@ namespace UI {
                     window.close();
                 }
 
-                if (event->is<sf::Event::Resized>()) {
-                    // window.setView(sf::View(sf::FloatRect(0, 0, static_cast<float>(event.size.width),
-                    //                                       static_cast<float>(event.size.height))));
+                if (auto e = event->getIf<sf::Event::Resized>()) {
+                    // window.setView(sf::View(
+                    //         sf::FloatRect({0, 0}, {static_cast<float>(e->size.x), static_cast<float>(e->size.y)})));
                 }
 
                 command.onEvent(&event.value());
