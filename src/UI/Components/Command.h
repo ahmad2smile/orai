@@ -33,7 +33,6 @@ private:
     sf::View* _suggestionsView;
 
     bool _executing;
-    float _scrollSpeed;
 };
 
 

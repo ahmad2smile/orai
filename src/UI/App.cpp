@@ -18,10 +18,10 @@ namespace UI {
 
         const auto window = new sf::RenderWindow(sf::VideoMode({size}), title);
 
-        window->setView(sf::View(sf::FloatRect({0, 0}, {static_cast<float>(width), static_cast<float>(height)})));
+        window->setView(sf::View(sf::FloatRect({0, 0}, {static_cast<float>(size.x), static_cast<float>(size.y)})));
 
         // NOTE: To avoid screen tearing
-        window->setVerticalSyncEnabled(true);
+        // window->setVerticalSyncEnabled(true);
         window->setFramerateLimit(60);
 
         if (!_font.openFromFile("FiraCodeNerdFont-Light.ttf")) {
@@ -33,11 +33,11 @@ namespace UI {
     }
 
     void App::run(sf::RenderWindow& window) const {
+        // auto view = window.getView();
         DbContext dbContext;
         dbContext.initTables();
 
         const auto engine = new ExecutionEngine(dbContext);
-
         Command command(window, _font, dbContext, *engine);
 
         while (window.isOpen()) {
@@ -46,9 +46,9 @@ namespace UI {
                     window.close();
                 }
 
-                if (auto e = event->getIf<sf::Event::Resized>()) {
-                    // window.setView(sf::View(
-                    //         sf::FloatRect({0, 0}, {static_cast<float>(e->size.x), static_cast<float>(e->size.y)})));
+                if (const auto e = event->getIf<sf::Event::Resized>()) {
+                    // view.setSize(sf::Vector2f({static_cast<float>(e->size.x), static_cast<float>(e->size.y)}));
+                    window.setView(sf::View(sf::FloatRect({0, 0}, {static_cast<float>(e->size.x), static_cast<float>(e->size.y)})));
                 }
 
                 command.onEvent(&event.value());
@@ -57,9 +57,7 @@ namespace UI {
             command.onFrame();
 
             window.clear(sf::Color(2, 5, 23));
-
             window.draw(command);
-
             window.display();
         }
     }

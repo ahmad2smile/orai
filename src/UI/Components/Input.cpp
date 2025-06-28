@@ -18,6 +18,8 @@ Input::Input(sf::RenderWindow& window, const sf::Font& font, std::wstring&& valu
     _border->setOutlineColor(sf::Color(54, 56, 57));
     _border->setOutlineThickness(2.f);
     _border->setPosition(position + margin);
+    _border->setScale({1, 1});
+    _border->setOrigin({0, 0});
 
     _margin = new sf::Vector2f(margin);
 }
@@ -28,18 +30,23 @@ Input::~Input() {
 }
 
 void Input::setSize(const sf::Vector2f& value) {
-    Text::setSize(value - *_margin * 2.f);
-    _border->setSize(value - *_margin * 2.f);
+    const auto newValue = value - *_margin * 2.f;
+
+    Text::setSize(newValue);
+    _border->setSize(newValue);
 }
 
 sf::Vector2f Input::getSize() const {
-    return Text::getSize() + *_margin * 2.f;
+    return _border->getSize() + *_margin * 2.f;
 }
-
 
 void Input::setPosition(const sf::Vector2f& value) {
     Text::setPosition(value + *_margin);
     _border->setPosition(value + *_margin);
+}
+
+sf::Vector2f Input::getPosition() const {
+    return _border->getPosition() - *_margin;
 }
 
 void Input::onEvent(const sf::Event* event) {
@@ -66,17 +73,15 @@ void Input::onEvent(const sf::Event* event) {
         } else if (e->unicode < 128) {
             const auto newChar = static_cast<char>(e->unicode);
 
-            if (std::isalpha(newChar)) {
-                value.push_back(newChar);
+            value.push_back(newChar);
 
-                setString(value);
-            }
+            setString(value);
         }
     }
 }
 
 void Input::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
-    target.draw(*_border);
+    target.draw(*_border, states);
 
     Text::draw(target, states);
 }

@@ -21,7 +21,6 @@ unsigned long int InputUtils::widthBoundedString(std::wstring &value, const floa
         } else if (lineLength >= maxCharsPerLine) {
             value.replace(lastSpaceIndex, 1, L"\n");
 
-
             lineLength = 0;
             lines++;
         }

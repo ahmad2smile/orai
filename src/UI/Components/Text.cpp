@@ -50,9 +50,10 @@ void Text::setString(std::wstring& string) {
     if (string.length() > 2) {
         const float charWidth = _sfText->findCharacterPos(1).x - _sfText->findCharacterPos(0).x;
 
-        const float lines = InputUtils::widthBoundedString(string, size.x, charWidth);
+        const auto lines = InputUtils::widthBoundedString(string, size.x, charWidth);
 
-        size.y = _originalSize->y + _sfText->getCharacterSize() * lines;
+        auto character_size = static_cast<float>(_sfText->getCharacterSize());
+        size.y = _originalSize->y + character_size * static_cast<float>(lines);
     }
 
     _sfText->setString(string);
@@ -99,13 +100,12 @@ void Text::clear() const {
 void Text::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     // const auto position = getPosition();
     // const auto size = getSize();
-    // // const auto leftPadding = 0 * (static_cast<float>(_text->getCharacterSize()) / 2.f);
-    // // // NOTE: available space for padding vertically / 2.5f
-    // // const auto topPadding = 0 * ((size.y - _text->getGlobalBounds().size.y) / 2.5f);
-    // //
+    // const auto leftPadding = 0 * (static_cast<float>(_text->getCharacterSize()) / 2.f);
+    // // NOTE: available space for padding vertically / 2.5f
+    // const auto topPadding = 0 * ((size.y - _text->getGlobalBounds().size.y) / 2.5f);
+    //
     // _background->setSize(size);
     // _background->setPosition(position);
-    // _text->setPosition(position);
 
     target.draw(*_background);
     target.draw(*_sfText);

@@ -3,11 +3,13 @@
 //
 
 #include "Command.h"
+
+#include "Output.h"
 #include "TextList.h"
 #include <string>
 
 Command::Command(sf::RenderWindow& window, const sf::Font& font, DbContext& dbContext, ExecutionEngine& engine)
-    : Component(window, font), _dbContext(dbContext), _engine(engine), _executing(false), _scrollSpeed(100) {
+    : Component(window, font), _dbContext(dbContext), _engine(engine), _executing(false) {
     const auto windowSize = window.getSize();
     const auto windowHeight = static_cast<float>(windowSize.y);
     const auto windowWidth = static_cast<float>(windowSize.x);
@@ -18,8 +20,7 @@ Command::Command(sf::RenderWindow& window, const sf::Font& font, DbContext& dbCo
     _input = new Input(window, font, L"", inputPosition, inputSize, {10, 10}, 25);
     _input->setStyle(sf::Text::Bold);
 
-    _output = new Text(window, font);
-    _output->setCharacterSize(25);
+    _output = new Output(window, font, L"", {0, 5}, {windowWidth, windowHeight - inputSize.y}, {10, 10}, 25);
     _output->setStyle(sf::Text::Bold);
 
     const auto suggestionsSize = sf::Vector2f(windowWidth * 0.75f, windowHeight);
@@ -48,12 +49,7 @@ void Command::onFrame() {
             return;
         }
 
-        const auto windowSize = _window.getSize();
-
         _output->appendString(output.value());
-        _output->setPosition({_output->getPosition().x, static_cast<float>(windowSize.y) -
-                                                                _output->getLocalBounds().size.y -
-                                                                _input->getLocalBounds().size.y});
     }
 }
 
@@ -96,30 +92,33 @@ void Command::onEvent(const sf::Event* event) {
         }
     }
 
-    if (!_executing && (event->is<sf::Event::TextEntered>() || event->is<sf::Event::Resized>())) {
+    if (!_executing && event->is<sf::Event::TextEntered>()) {
         const auto inputHeight = _input->getSize().y;
 
         _input->setPosition({0, windowHeight - inputHeight});
         _input->setSize({windowWidth, inputHeight});
+
+        _output->setSize({windowWidth, windowHeight - inputHeight});
     }
 
-    if (event->is<sf::Event::MouseWheelScrolled>()) {
-        const auto e = event->getIf<sf::Event::MouseWheelScrolled>();
-        const auto delta = e->delta * _scrollSpeed;
-        auto outputPosition = _output->getPosition();
+    if (const auto e = event->getIf<sf::Event::Resized>()) {
+        const auto inputHeight = _input->getSize().y;
+        const auto newHeight = static_cast<float>(e->size.y);
+        const auto newWidth = static_cast<float>(e->size.x);
 
-        _output->setPosition({outputPosition.x, outputPosition.y + delta});
+        _input->setPosition({0, newHeight - inputHeight});
+        _input->setSize({newWidth, inputHeight});
 
-        // Update the view position
-        _suggestionsView->setCenter({windowWidth / 2, windowHeight / 2});
+        _output->setPosition({0, 5});
+        _output->setSize({newWidth, newHeight - inputHeight});
     }
 }
 
 void Command::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    target.draw(*_output);
-    target.draw(*_input);
+    target.draw(*_output, states);
+    target.draw(*_input, states);
 
-    target.setView(*_suggestionsView);
-    target.draw(*_suggestions);
-    target.setView(target.getDefaultView());
+    // target.setView(*_suggestionsView);
+    // target.draw(*_suggestions);
+    // target.setView(target.getDefaultView());
 }
