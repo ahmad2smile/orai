@@ -6,8 +6,7 @@
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics.hpp>
-
-#include "../Utils/InputUtils.h"
+#include <cwctype>
 
 Input::Input(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
              const sf::Vector2f& size, const sf::Vector2f& margin, const unsigned int fontSize)
@@ -70,11 +69,11 @@ void Input::onEvent(const sf::Event* event) {
 
                 setString(value);
             }
-        } else if (e->unicode < 128) {
-            const auto newChar = static_cast<char>(e->unicode);
+            // NOTE: Skip Tab key and Esc
+        } else if (e->unicode < 128 && e->unicode != 9 && e->unicode != 27) {
+            const auto newChar = static_cast<wchar_t>(e->unicode);
 
             value.push_back(newChar);
-
             setString(value);
         }
     }

@@ -21,7 +21,7 @@ namespace UI {
         window->setView(sf::View(sf::FloatRect({0, 0}, {static_cast<float>(size.x), static_cast<float>(size.y)})));
 
         // NOTE: To avoid screen tearing
-        // window->setVerticalSyncEnabled(true);
+        window->setVerticalSyncEnabled(true);
         window->setFramerateLimit(60);
 
         if (!_font.openFromFile("FiraCodeNerdFont-Light.ttf")) {
@@ -33,7 +33,6 @@ namespace UI {
     }
 
     void App::run(sf::RenderWindow& window) const {
-        // auto view = window.getView();
         DbContext dbContext;
         dbContext.initTables();
 
@@ -47,7 +46,6 @@ namespace UI {
                 }
 
                 if (const auto e = event->getIf<sf::Event::Resized>()) {
-                    // view.setSize(sf::Vector2f({static_cast<float>(e->size.x), static_cast<float>(e->size.y)}));
                     window.setView(sf::View(sf::FloatRect({0, 0}, {static_cast<float>(e->size.x), static_cast<float>(e->size.y)})));
                 }
 

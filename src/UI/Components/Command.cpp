@@ -114,11 +114,12 @@ void Command::onEvent(const sf::Event* event) {
     }
 }
 
-void Command::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+void Command::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
     target.draw(*_output, states);
     target.draw(*_input, states);
+    const auto view = target.getView();
 
-    // target.setView(*_suggestionsView);
-    // target.draw(*_suggestions);
-    // target.setView(target.getDefaultView());
+    target.setView(*_suggestionsView);
+    target.draw(*_suggestions);
+    target.setView(view);
 }
