@@ -36,7 +36,7 @@ void Input::setSize(const sf::Vector2f& value) {
 }
 
 sf::Vector2f Input::getSize() const {
-    return _border->getSize() + *_margin * 2.f;
+    return Text::getSize() + *_margin * 2.f;
 }
 
 void Input::setPosition(const sf::Vector2f& value) {
@@ -45,7 +45,7 @@ void Input::setPosition(const sf::Vector2f& value) {
 }
 
 sf::Vector2f Input::getPosition() const {
-    return _border->getPosition() - *_margin;
+    return Text::getPosition() - *_margin;
 }
 
 void Input::onEvent(const sf::Event* event) {

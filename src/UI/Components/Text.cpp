@@ -48,11 +48,11 @@ void Text::setString(std::wstring& string) {
     auto size = Component::getSize();
 
     if (string.length() > 2) {
-        const float charWidth = _sfText->findCharacterPos(1).x - _sfText->findCharacterPos(0).x;
+        // NOTE: 1.2 add a bit of buffer on new lines on Text as charSize is an approximation for font-width
+        const auto character_size = static_cast<float>(_sfText->getCharacterSize()) * 1.2f;
 
-        const auto lines = InputUtils::widthBoundedString(string, size.x, charWidth);
+        const auto lines = InputUtils::widthBoundedString(string, size.x, character_size);
 
-        auto character_size = static_cast<float>(_sfText->getCharacterSize());
         size.y = _originalSize->y + character_size * static_cast<float>(lines);
     }
 
