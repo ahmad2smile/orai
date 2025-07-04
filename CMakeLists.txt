@@ -36,6 +36,8 @@ add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs}
         src/Persistance/DbContext.h
         src/UI/Components/Output.cpp
         src/UI/Components/Output.h
+        src/UI/Graphics/View.cpp
+        src/UI/Graphics/View.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE  SQLite::SQLite3 SFML::Network SFML::Graphics SFML::Window SFML::System)
@@ -55,7 +57,9 @@ add_executable(test_target ${TESTS} ${SOURCES} ${HEADERs}
         src/Persistance/DbContext.cpp
         src/Persistance/DbContext.h
         src/UI/Components/Output.cpp
-        src/UI/Components/Output.h)
+        src/UI/Components/Output.h
+        src/UI/Graphics/View.cpp
+        src/UI/Graphics/View.h)
 
 target_include_directories(test_target PRIVATE ${SFML_INCLUDE_DIRS})
 target_link_libraries(test_target PRIVATE GTest::gtest GTest::gtest_main SQLite::SQLite3 SFML::Network SFML::Graphics SFML::Window SFML::System)

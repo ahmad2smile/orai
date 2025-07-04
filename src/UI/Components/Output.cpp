@@ -4,6 +4,8 @@
 
 #include "Output.h"
 
+#include "src/UI/Graphics/View.h"
+
 Output::Output(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
                const sf::Vector2f& size, const sf::Vector2f& margin, const unsigned int fontSize)
     : Text(window, font, std::move(value), position + margin, size - margin * 2.f, fontSize), _scrollSpeed(100) {
@@ -17,26 +19,33 @@ Output::Output(sf::RenderWindow& window, const sf::Font& font, std::wstring&& va
     _border->setOrigin({0, 0});
 
     _margin = new sf::Vector2f(margin);
+
+    _scrollView = new View(window, position + margin, size - margin * 2.f);
 }
 
 Output::~Output() {
     delete _border;
     delete _margin;
+    delete _scrollView;
 }
 
 void Output::setSize(const sf::Vector2f& value) {
-    Text::setSize(value - *_margin * 2.f);
-    _border->setSize(value - *_margin * 2.f);
+    const auto adjustValue = value - *_margin * 2.f;
+
+    Text::setSize(adjustValue);
+    _border->setSize(adjustValue);
+    _scrollView->setSize(adjustValue);
 }
 
 sf::Vector2f Output::getSize() const {
     return Text::getSize() + *_margin * 2.f;
 }
 
-
 void Output::setPosition(const sf::Vector2f& value) {
-    Text::setPosition(value + *_margin);
-    _border->setPosition(value + *_margin);
+    const auto adjustedValue = value + *_margin;
+    Text::setPosition(adjustedValue);
+    _border->setPosition(adjustedValue);
+    _scrollView->setPosition(adjustedValue + Text::getSize() / 2.f);
 }
 
 sf::Vector2f Output::getPosition() const {
@@ -56,6 +65,9 @@ void Output::onEvent(const sf::Event* event) {
 
 void Output::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
     target.draw(*_border);
+    const auto view = target.getView();
 
+    target.setView(*_scrollView);
     Text::draw(target, states);
+    target.setView(view);
 }

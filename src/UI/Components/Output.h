@@ -5,6 +5,7 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 #include "Text.h"
+#include "src/UI/Graphics/View.h"
 
 
 #include <string>
@@ -39,6 +40,7 @@ private:
     sf::RectangleShape* _border;
     sf::Vector2f* _margin;
     float _scrollSpeed;
+    View* _scrollView;
 };
 
 

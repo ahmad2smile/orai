@@ -107,6 +107,6 @@ void Text::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     // _background->setSize(size);
     // _background->setPosition(position);
 
-    target.draw(*_background);
-    target.draw(*_sfText);
+    target.draw(*_background, states);
+    target.draw(*_sfText, states);
 }
