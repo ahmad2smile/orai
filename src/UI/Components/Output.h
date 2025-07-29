@@ -18,19 +18,17 @@
 
 class Output final : public Text {
 public:
-    explicit Output(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value = L"",
-                   const sf::Vector2f& position = {0, 0}, const sf::Vector2f& size = {18, 18},
-                   const sf::Vector2f& margin = {10, -10}, unsigned int fontSize = 18);
+    explicit Output(const ComponentArgs& args, const Dimensions& dimensions, std::wstring&& value);
 
     ~Output() override;
 
     void setSize(const sf::Vector2f& value) override;
 
-    sf::Vector2f getSize() const override;
+    [[nodiscard]] sf::Vector2f getSize() const override;
 
     void setPosition(const sf::Vector2f& value) override;
 
-    sf::Vector2f getPosition() const override;
+    [[nodiscard]] sf::Vector2f getPosition() const override;
 
     void onEvent(const sf::Event* event) override;
 
@@ -42,7 +40,6 @@ private:
     float _scrollSpeed;
     View* _scrollView;
 };
-
 
 
 #endif //OUTPUT_H

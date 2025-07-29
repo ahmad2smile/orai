@@ -7,10 +7,9 @@
 #include <iostream>
 #include <SFML/Window/Event.hpp>
 
-TextList::TextList(sf::RenderWindow& window, const sf::Font& font, const unsigned int fontSize,
-                   const sf::Vector2f& position, const sf::Vector2f& size)
-    : Component(window, font, position, size), _items(new std::vector<Text*>()), _fontSize(fontSize), _scrollOffset(0),
-      _selectedText(nullptr), _selectedTextIndex(-1) {}
+TextList::TextList(const ComponentArgs args, const Dimensions& dimensions)
+    : Component(args, dimensions), _items(new std::vector<Text*>()), _scrollOffset(0), _selectedText(nullptr),
+      _selectedTextIndex(-1) {}
 
 TextList::~TextList() {
     for (const auto item: *_items) {
@@ -42,7 +41,8 @@ void TextList::addItem(std::wstring&& value) const {
 
     auto itemHeight = 60.f;
     const auto size = getSize();
-    const auto newText = new Text(_window, _font, std::move(value), newPosition, {size.x, itemHeight}, _fontSize);
+    const auto newText = new Text(*_args, {newPosition, {size.x, itemHeight}}, std::move(value));
+
     newText->setStyle(sf::Text::Bold);
 
     _items->push_back(newText);

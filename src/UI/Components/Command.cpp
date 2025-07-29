@@ -8,23 +8,23 @@
 #include "TextList.h"
 #include <string>
 
-Command::Command(sf::RenderWindow& window, const sf::Font& font, DbContext& dbContext, ExecutionEngine& engine)
-    : Component(window, font), _dbContext(dbContext), _engine(engine), _executing(false) {
-    const auto windowSize = window.getSize();
+Command::Command(const ComponentArgs& args, const Dimensions& dimensions, DbContext& dbContext, ExecutionEngine& engine)
+    : Component(args, dimensions), _dbContext(dbContext), _engine(engine), _executing(false) {
+    const auto windowSize = args.window.getSize();
     const auto windowHeight = static_cast<float>(windowSize.y);
     const auto windowWidth = static_cast<float>(windowSize.x);
 
     const auto inputSize = sf::Vector2f(windowWidth, 60);
     const auto inputPosition = sf::Vector2f(0, windowHeight - inputSize.y);
 
-    _input = new Input(window, font, L"", inputPosition, inputSize, {10, 10}, 25);
+    _input = new Input(args, {inputPosition, inputSize, {10, 10}}, L"");
     _input->setStyle(sf::Text::Bold);
 
-    _output = new Output(window, font, L"", {0, 5}, {windowWidth, windowHeight - inputSize.y}, {10, 10}, 25);
+    _output = new Output(args, {{0, 5}, {windowWidth, windowHeight - inputSize.y}, {10, 10}}, L"");
     _output->setStyle(sf::Text::Bold);
 
     const auto suggestionsSize = sf::Vector2f(windowWidth * 0.75f, windowHeight);
-    _suggestions = new TextList(window, font, 25, {0, 0}, suggestionsSize);
+    _suggestions = new TextList(args, {{0, 0}, suggestionsSize});
 
     _suggestionsView = new sf::View();
     _suggestionsView->setSize(suggestionsSize);

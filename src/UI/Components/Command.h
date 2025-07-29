@@ -14,7 +14,8 @@
 
 class Command final : public Component {
 public:
-    explicit Command(sf::RenderWindow& window, const sf::Font& font, DbContext& dbContext, ExecutionEngine& engine);
+    explicit Command(const ComponentArgs& args, const Dimensions& dimensions, DbContext& dbContext,
+                     ExecutionEngine& engine);
 
     ~Command() override;
 

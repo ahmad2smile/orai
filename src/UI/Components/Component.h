@@ -16,9 +16,20 @@ public:
     void virtual setPosition(const sf::Vector2f& value);
     [[nodiscard]] virtual sf::Vector2f getPosition() const;
 
+    struct ComponentArgs {
+        sf::RenderWindow& window;
+        const sf::Font& font;
+        unsigned int fontSize = 24;
+    };
+
+    struct Dimensions {
+        sf::Vector2f position = {0, 0};
+        sf::Vector2f size = {0, 0};
+        sf::Vector2f margin = {0, 0};
+    };
+
 protected:
-    Component(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2f& position = {0, 0},
-                  const sf::Vector2f& size = {0, 0});
+    explicit Component(const ComponentArgs& args, const Dimensions& dimensions);
 
     ~Component() override;
 
@@ -30,10 +41,10 @@ protected:
 
     const sf::Font& _font;
     sf::RenderWindow& _window;
+    ComponentArgs* _args;
 
 private:
-    sf::Vector2f* _size;
-    sf::Vector2f* _position;
+    Dimensions* _dimensions;
 };
 
 

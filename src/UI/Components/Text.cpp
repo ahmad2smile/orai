@@ -9,13 +9,13 @@
 
 #include "../Utils/InputUtils.h"
 
-Text::Text(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
-           const sf::Vector2f& size, const unsigned int fontSize)
-    : Component(window, font, position, size), _sfText(new sf::Text(font, value, fontSize)),
-      _originalSize(new sf::Vector2f(size)), _currentLines(1), _background(new sf::RectangleShape(size)) {
-    _sfText->setPosition(position);
-    _background->setSize(size);
-    _background->setPosition(position);
+Text::Text(const ComponentArgs& args, const Dimensions& dimensions, std::wstring&& value)
+    : Component(args, dimensions), _sfText(new sf::Text(args.font, value, args.fontSize)),
+      _originalSize(new sf::Vector2f(dimensions.size)), _currentLines(1),
+      _background(new sf::RectangleShape(dimensions.size)) {
+    _sfText->setPosition(dimensions.position);
+    _background->setSize(dimensions.size);
+    _background->setPosition(dimensions.position);
     _background->setFillColor(sf::Color::Transparent);
     setString(value);
 }

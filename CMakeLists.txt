@@ -22,8 +22,6 @@ file(GLOB_RECURSE HEADERS src/*.h)
 configure_file(assets/FiraCodeNerdFont-Light.ttf ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE} COPYONLY)
 
 add_executable(${PROJECT_NAME} main.cpp ${SOURCES} ${HEADERs}
-        src/UI/Components/Scrollable.cpp
-        src/UI/Components/Scrollable.h
         src/UI/Components/Command.cpp
         src/UI/Components/Command.h
         src/Commands/ExecutionEngine.cpp

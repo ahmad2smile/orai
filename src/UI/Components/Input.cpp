@@ -8,19 +8,18 @@
 #include <SFML/Graphics.hpp>
 #include <cwctype>
 
-Input::Input(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value, const sf::Vector2f& position,
-             const sf::Vector2f& size, const sf::Vector2f& margin, const unsigned int fontSize)
-    : Text(window, font, std::move(value), position + margin, size - margin * 2.f, fontSize) {
+Input::Input(const ComponentArgs& args, const Dimensions& dimensions, std::wstring&& value)
+    : Text(args, dimensions, std::move(value)) {
 
-    _border = new sf::RectangleShape(size - margin * 2.f);
+    _border = new sf::RectangleShape(dimensions.size - dimensions.margin * 2.f);
     _border->setFillColor(sf::Color(15, 34, 52, 255));
     _border->setOutlineColor(sf::Color(54, 56, 57));
     _border->setOutlineThickness(2.f);
-    _border->setPosition(position + margin);
+    _border->setPosition(dimensions.position + dimensions.margin);
     _border->setScale({1, 1});
     _border->setOrigin({0, 0});
 
-    _margin = new sf::Vector2f(margin);
+    _margin = new sf::Vector2f(dimensions.margin);
 }
 
 Input::~Input() {

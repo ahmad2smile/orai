@@ -14,9 +14,8 @@
 
 class Text : public Component {
 public:
-    explicit Text(sf::RenderWindow& window, const sf::Font& font, std::wstring&& value = L"",
-                  const sf::Vector2f& position = {0, 0}, const sf::Vector2f& size = {18, 18},
-                  unsigned int fontSize = 18);
+    explicit Text(const ComponentArgs& args, const Dimensions& dimensions, std::wstring&& value = L"");
+
     ~Text() override;
 
     void onEvent(const sf::Event* event) override;

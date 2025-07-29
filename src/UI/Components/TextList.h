@@ -11,8 +11,7 @@
 
 class TextList final : public Component {
 public:
-    explicit TextList(sf::RenderWindow& window, const sf::Font& font, unsigned int fontSize = 25,
-                      const sf::Vector2f& position = {0, 0}, const sf::Vector2f& size = {0, 0});
+    explicit TextList(ComponentArgs args, const Dimensions& dimensions);
 
     ~TextList() override;
 
@@ -30,7 +29,6 @@ public:
 
 private:
     std::vector<Text*>* _items;
-    unsigned int _fontSize;
     float _scrollOffset;
     const Text* _selectedText;
     size_t _selectedTextIndex;

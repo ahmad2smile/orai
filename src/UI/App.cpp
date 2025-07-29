@@ -37,7 +37,7 @@ namespace UI {
         dbContext.initTables();
 
         const auto engine = new ExecutionEngine(dbContext);
-        Command command(window, _font, dbContext, *engine);
+        Command command({window, _font, 24}, {}, dbContext, *engine);
 
         while (window.isOpen()) {
             while (const auto event = window.pollEvent()) {
@@ -46,7 +46,8 @@ namespace UI {
                 }
 
                 if (const auto e = event->getIf<sf::Event::Resized>()) {
-                    window.setView(sf::View(sf::FloatRect({0, 0}, {static_cast<float>(e->size.x), static_cast<float>(e->size.y)})));
+                    window.setView(sf::View(
+                            sf::FloatRect({0, 0}, {static_cast<float>(e->size.x), static_cast<float>(e->size.y)})));
                 }
 
                 command.onEvent(&event.value());
