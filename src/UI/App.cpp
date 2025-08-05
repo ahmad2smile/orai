@@ -37,7 +37,7 @@ namespace UI {
         dbContext.initTables();
 
         const auto engine = new ExecutionEngine(dbContext);
-        Command command({window, _font, 24}, {}, dbContext, *engine);
+        Command command({window, _font}, dbContext, *engine);
 
         while (window.isOpen()) {
             while (const auto event = window.pollEvent()) {

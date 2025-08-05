@@ -9,20 +9,16 @@
 
 #include "../Utils/InputUtils.h"
 
-Text::Text(const ComponentArgs& args, const Dimensions& dimensions, std::wstring&& value)
-    : Component(args, dimensions), _sfText(new sf::Text(args.font, value, args.fontSize)),
-      _originalSize(new sf::Vector2f(dimensions.size)), _currentLines(1),
-      _background(new sf::RectangleShape(dimensions.size)) {
-    _sfText->setPosition(dimensions.position);
-    _background->setSize(dimensions.size);
-    _background->setPosition(dimensions.position);
-    _background->setFillColor(sf::Color::Transparent);
+Text::Text(const ComponentArgs& args, std::wstring&& value, const sf::Vector2f& margin)
+    : Component(args), _sfText(new sf::Text(args.font, value, args.fontSize)), _currentLines(1),
+      _originalSize(new sf::Vector2f(args.size)), _margin(new sf::Vector2f(margin)) {
+    _sfText->setPosition(args.position + margin);
+
     setString(value);
 }
 
 Text::~Text() {
     delete _sfText;
-    delete _background;
     delete _originalSize;
 }
 
@@ -45,7 +41,7 @@ std::wstring Text::getString() const {
 }
 
 void Text::setString(std::wstring& string) {
-    auto size = Component::getSize();
+    auto size = _args->size;
 
     if (string.length() > 2) {
         // NOTE: 1.2 add a bit of buffer on new lines on Text as charSize is an approximation for font-width
@@ -69,10 +65,6 @@ void Text::setStyle(const sf::Text::Style style) const {
     _sfText->setStyle(style);
 }
 
-void Text::setBackgroundColor(const sf::Color& color) const {
-    _background->setFillColor(color);
-}
-
 void Text::appendString(const std::wstring& string) {
     setString(_sfText->getString().toWideString().append(string));
 }
@@ -82,8 +74,8 @@ void Text::setSize(const sf::Vector2f& value) {
 }
 
 void Text::setPosition(const sf::Vector2f& value) {
-    _sfText->setPosition(value);
     Component::setPosition(value);
+    _sfText->setPosition(value + *_margin);
 }
 
 sf::Rect<float> Text::getLocalBounds() const {
@@ -97,16 +89,7 @@ void Text::clear() const {
     _sfText->setString("");
 }
 
-void Text::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    // const auto position = getPosition();
-    // const auto size = getSize();
-    // const auto leftPadding = 0 * (static_cast<float>(_text->getCharacterSize()) / 2.f);
-    // // NOTE: available space for padding vertically / 2.5f
-    // const auto topPadding = 0 * ((size.y - _text->getGlobalBounds().size.y) / 2.5f);
-    //
-    // _background->setSize(size);
-    // _background->setPosition(position);
-
-    target.draw(*_background, states);
+void Text::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
+    Component::draw(target, states);
     target.draw(*_sfText, states);
 }

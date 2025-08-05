@@ -5,6 +5,7 @@
 #define INPUT_H
 
 #include "Text.h"
+#include "src/UI/Graphics/ViewPort.h"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -12,7 +13,8 @@
 
 class Input final : public Text {
 public:
-    explicit Input(const ComponentArgs& args, const Dimensions& dimensions, std::wstring&& value);
+    explicit Input(const ComponentArgs& args, std::wstring&& value, const sf::Vector2f& margin = {10, 10},
+                   bool isEditable = true);
 
     ~Input() override;
 
@@ -29,8 +31,11 @@ public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 private:
+    bool _isEditable;
+    float _scrollSpeed;
+    ViewPort* _scrollView;
     sf::RectangleShape* _border;
-    sf::Vector2f* _margin;
+    sf::RectangleShape* _background;
 };
 
 #endif // INPUT_H

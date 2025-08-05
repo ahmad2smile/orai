@@ -5,12 +5,10 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 #include "Text.h"
-#include "src/UI/Graphics/View.h"
-
+#include "src/UI/Graphics/ViewPort.h"
 
 #include <string>
 #include <SFML/Graphics/Font.hpp>
-
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -18,7 +16,7 @@
 
 class Output final : public Text {
 public:
-    explicit Output(const ComponentArgs& args, const Dimensions& dimensions, std::wstring&& value);
+    explicit Output(const ComponentArgs& args, std::wstring&& value, const sf::Vector2f& margin = {10, 10});
 
     ~Output() override;
 
@@ -35,10 +33,10 @@ public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 private:
-    sf::RectangleShape* _border;
-    sf::Vector2f* _margin;
     float _scrollSpeed;
-    View* _scrollView;
+    ViewPort* _scrollView;
+    sf::RectangleShape* _border;
+    sf::RectangleShape* _background;
 };
 
 

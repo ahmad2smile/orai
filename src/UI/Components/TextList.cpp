@@ -7,17 +7,23 @@
 #include <iostream>
 #include <SFML/Window/Event.hpp>
 
-TextList::TextList(const ComponentArgs args, const Dimensions& dimensions)
-    : Component(args, dimensions), _items(new std::vector<Text*>()), _scrollOffset(0), _selectedText(nullptr),
-      _selectedTextIndex(-1) {}
+TextList::TextList(const ComponentArgs& args)
+    : Component(args), _items(new std::vector<Text*>()), _scrollOffset(0), _selectedText(nullptr),
+      _selectedTextIndex(-1), _backgrounds(new std::vector<sf::RectangleShape*>()) {}
 
 TextList::~TextList() {
     for (const auto item: *_items) {
         delete item;
     }
 
+    for (const auto b: *_backgrounds) {
+        delete b;
+    }
+
     _items->clear();
+    _backgrounds->clear();
     delete _items;
+    delete _backgrounds;
 }
 
 void TextList::setItems(std::vector<std::wstring>& values) const {
@@ -41,11 +47,13 @@ void TextList::addItem(std::wstring&& value) const {
 
     auto itemHeight = 60.f;
     const auto size = getSize();
-    const auto newText = new Text(*_args, {newPosition, {size.x, itemHeight}}, std::move(value));
+    const auto newText = new Text({_args->window, _args->font, _args->fontSize, newPosition, {size.x, itemHeight}},
+                                  std::move(value));
 
     newText->setStyle(sf::Text::Bold);
 
     _items->push_back(newText);
+    _backgrounds->push_back(new sf::RectangleShape({size.x, itemHeight}));
 }
 const Text* TextList::getSelectedItem() const {
     return _selectedText;
@@ -92,16 +100,19 @@ void TextList::draw(sf::RenderTarget& target, const sf::RenderStates states) con
     auto backgroundToggle = false;
 
 
-    for (const auto& item: *_items) {
+    for (auto i = 0; i < _items->size(); ++i) {
+        const auto& item = _items->at(i);
+        const auto& background = _backgrounds->at(i);
+
         const auto itemHeight = item->getSize().y;
         const auto itemPos = item->getPosition();
 
         // Check if the item is within the visible range
         if (itemPos.y + itemHeight > listPos.y && itemPos.y < listPos.y + listSize.y) {
             if (_selectedText == item) {
-                item->setBackgroundColor(_colorSelected);
+                background->setFillColor(_colorSelected);
             } else {
-                item->setBackgroundColor(backgroundToggle ? _colorDark : _colorLight);
+                background->setFillColor(backgroundToggle ? _colorDark : _colorLight);
             }
 
             backgroundToggle = !backgroundToggle;

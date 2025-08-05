@@ -9,9 +9,11 @@
 #include "Component.h"
 #include "Text.h"
 
+#include <SFML/Graphics/RectangleShape.hpp>
+
 class TextList final : public Component {
 public:
-    explicit TextList(ComponentArgs args, const Dimensions& dimensions);
+    explicit TextList(const ComponentArgs& args);
 
     ~TextList() override;
 
@@ -32,6 +34,7 @@ private:
     float _scrollOffset;
     const Text* _selectedText;
     size_t _selectedTextIndex;
+    std::vector<sf::RectangleShape*>* _backgrounds;
     const sf::Color _colorSelected = sf::Color(0, 0, 250);
     const sf::Color _colorDark = sf::Color(128, 128, 128);
     const sf::Color _colorLight = sf::Color(192, 192, 192);

@@ -9,13 +9,13 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Window/Event.hpp>
 #include "Input.h"
+#include "Output.h"
 #include "../../Commands/ExecutionEngine.h"
 #include "TextList.h"
 
 class Command final : public Component {
 public:
-    explicit Command(const ComponentArgs& args, const Dimensions& dimensions, DbContext& dbContext,
-                     ExecutionEngine& engine);
+    explicit Command(const ComponentArgs& args, DbContext& dbContext, ExecutionEngine& engine);
 
     ~Command() override;
 
@@ -28,7 +28,7 @@ public:
 private:
     DbContext& _dbContext;
     ExecutionEngine& _engine;
-    Text* _output;
+    Input* _output;
     Input* _input;
     TextList* _suggestions;
     sf::View* _suggestionsView;

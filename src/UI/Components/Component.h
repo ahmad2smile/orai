@@ -20,16 +20,12 @@ public:
         sf::RenderWindow& window;
         const sf::Font& font;
         unsigned int fontSize = 24;
-    };
-
-    struct Dimensions {
         sf::Vector2f position = {0, 0};
         sf::Vector2f size = {0, 0};
-        sf::Vector2f margin = {0, 0};
     };
 
 protected:
-    explicit Component(const ComponentArgs& args, const Dimensions& dimensions);
+    explicit Component(const ComponentArgs& args);
 
     ~Component() override;
 
@@ -37,14 +33,9 @@ protected:
 
     virtual void onFrame();
 
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-    const sf::Font& _font;
-    sf::RenderWindow& _window;
     ComponentArgs* _args;
-
-private:
-    Dimensions* _dimensions;
 };
 
 

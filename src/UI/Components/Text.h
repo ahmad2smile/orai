@@ -6,7 +6,6 @@
 #define TEXT_H
 
 #include <SFML/Graphics/Font.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 
@@ -14,7 +13,7 @@
 
 class Text : public Component {
 public:
-    explicit Text(const ComponentArgs& args, const Dimensions& dimensions, std::wstring&& value = L"");
+    explicit Text(const ComponentArgs& args, std::wstring&& value = L"", const sf::Vector2f& margin = {10, 10});
 
     ~Text() override;
 
@@ -30,10 +29,6 @@ public:
 
     void setStyle(sf::Text::Style style) const;
 
-    void setPadding(sf::Vector2f padding);
-
-    void setBackgroundColor(const sf::Color& color) const;
-
     void appendString(const std::wstring& string);
 
     void setSize(const sf::Vector2f& value) override;
@@ -46,9 +41,9 @@ public:
 
 protected:
     sf::Text* _sfText;
-    sf::Vector2f* _originalSize;
     unsigned int _currentLines;
-    sf::RectangleShape* _background;
+    sf::Vector2f* _originalSize;
+    sf::Vector2f* _margin;
 };
 
 
