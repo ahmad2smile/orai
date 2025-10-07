@@ -40,7 +40,7 @@ Command::~Command() {
 }
 
 void Command::onFrame() {
-    if (_executing) {
+    if (true) {
         const auto output = _engine.pollCommandOutput();
 
         if (!output.has_value()) {

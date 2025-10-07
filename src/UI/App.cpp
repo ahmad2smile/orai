@@ -16,7 +16,7 @@ namespace UI {
         const auto video_mode = sf::VideoMode::getDesktopMode();
         const auto size = sf::Vector2u{video_mode.size.x / 2, video_mode.size.y / 2};
 
-        const auto window = new sf::RenderWindow(sf::VideoMode({size}), title);
+        const auto window = new sf::RenderWindow(sf::VideoMode({size}), title, sf::Style::None);
 
         window->setView(sf::View(sf::FloatRect({0, 0}, {static_cast<float>(size.x), static_cast<float>(size.y)})));
 
@@ -24,7 +24,7 @@ namespace UI {
         window->setVerticalSyncEnabled(true);
         window->setFramerateLimit(60);
 
-        if (!_font.openFromFile("FiraCodeNerdFont-Light.ttf")) {
+        if (!_font.openFromFile("assets/FiraCodeNerdFont-Light.ttf")) {
             // error...
             std::cout << "Error loading font" << std::endl;
         }

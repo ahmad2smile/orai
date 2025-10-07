@@ -6,10 +6,11 @@
 #define ORAI_EXECUTIONENGINE_H
 
 #include <string>
-#include <sstream>
 #include <codecvt>
 #include <optional>
 #include "src/Persistance/DbContext.h"
+
+import ConPty;
 
 class ExecutionEngine {
 public:
@@ -20,7 +21,9 @@ public:
     [[nodiscard]] std::optional<std::wstring> pollCommandOutput() const;
 
 private:
+    ConPty* _conPty;
     FILE* _outputStream;
+    bool _successExecution;
     const DbContext& _dbContext;
     std::string _currentWorkingDir;
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>* _wideConverter;
