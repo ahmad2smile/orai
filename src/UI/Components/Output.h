@@ -30,6 +30,10 @@ public:
 
     void onEvent(const sf::Event* event) override;
 
+    void appendString(const std::wstring& string) override;
+
+    void scrollToBottom() const;
+
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 private:

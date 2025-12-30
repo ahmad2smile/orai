@@ -32,7 +32,7 @@ Input::~Input() {
 
 void Input::setSize(const sf::Vector2f& value) {
     Text::setSize(value);
-    _scrollView->setSize(Text::getSize());
+    _scrollView->setSize(value - *_margin * 2.f);
     _border->setSize(value - *_margin * 2.f);
     _background->setSize(value - *_margin * 2.f);
 }
@@ -43,7 +43,7 @@ sf::Vector2f Input::getSize() const {
 
 void Input::setPosition(const sf::Vector2f& value) {
     Text::setPosition(value);
-    _scrollView->setPosition(value);
+    _scrollView->setPosition(value + *_margin);
     _border->setPosition(value + *_margin);
     _background->setPosition(value + *_margin);
 }
@@ -59,27 +59,28 @@ void Input::onEvent(const sf::Event* event) {
 
     if (e && _isEditable) {
         auto value = getString();
-        const size_t valueSize = value.size();
+        const auto unicode = e->unicode;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Backspace)) {
+        // Handle backspace (unicode 8)
+        if (unicode == 8) {
             if (!value.empty()) {
-                value.erase(valueSize - 1);
-
+                value.erase(value.size() - 1);
                 setString(value);
             }
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) &&
-                   !(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) ||
-                     sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl))) {
-            if (const auto new_index = valueSize - 1; new_index > 0) {
+        }
+        // Handle Enter/Return (unicode 13) - only with Ctrl for newline
+        else if (unicode == 13) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) ||
+                sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl)) {
+                // Ctrl+Enter is handled elsewhere for command execution
+            } else if (!value.empty()) {
                 value.push_back(L'\n');
-
                 setString(value);
             }
-            // NOTE: Skip Tab key and Esc
-        } else if (e->unicode < 128 && e->unicode != 9 && e->unicode != 27) {
-            const auto newChar = static_cast<wchar_t>(e->unicode);
-
-            value.push_back(newChar);
+        }
+        // Handle printable ASCII characters (32-126)
+        else if (unicode >= 32 && unicode < 127) {
+            value.push_back(static_cast<wchar_t>(unicode));
             setString(value);
         }
     }
@@ -120,13 +121,13 @@ void Input::onEvent(const sf::Event* event) {
 }
 
 void Input::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
-    const auto view = target.getView();
-
-    target.setView(*_scrollView);
-
+    // Draw border and background without viewport clipping
     target.draw(*_border, states);
     target.draw(*_background, states);
+    
+    // Draw text with viewport clipping so it doesn't overflow
+    const auto view = target.getView();
+    target.setView(*_scrollView);
     Text::draw(target, states);
-
     target.setView(view);
 }

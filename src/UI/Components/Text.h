@@ -29,7 +29,7 @@ public:
 
     void setStyle(sf::Text::Style style) const;
 
-    void appendString(const std::wstring& string);
+    virtual void appendString(const std::wstring& string);
 
     void setSize(const sf::Vector2f& value) override;
 

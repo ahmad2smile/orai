@@ -16,11 +16,16 @@ public:
 
     void setPosition(const sf::Vector2f& value);
     void setSize(const sf::Vector2f& value);
+    void setScrollY(float scrollY);
+    [[nodiscard]] float getScrollY() const { return _scrollY; }
 
 private:
+    void updateCenter();
+    
     const sf::RenderWindow& _window;
     sf::Vector2f* _position;
     sf::Vector2f* _size;
+    float _scrollY = 0.f;
 };
 
 

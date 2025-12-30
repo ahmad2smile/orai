@@ -28,7 +28,7 @@ public:
 private:
     DbContext& _dbContext;
     ExecutionEngine& _engine;
-    Input* _output;
+    Output* _output;
     Input* _input;
     TextList* _suggestions;
     sf::View* _suggestionsView;

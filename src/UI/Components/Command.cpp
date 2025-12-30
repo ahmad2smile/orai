@@ -19,8 +19,8 @@ Command::Command(const ComponentArgs& args, DbContext& dbContext, ExecutionEngin
 
     _input = new Input({args.window, args.font, args.fontSize, inputPosition, inputSize}, L"");
 
-    _output = new Input({args.window, args.font, args.fontSize, {0, 5}, {windowWidth, windowHeight - inputSize.y}}, L"",
-                        {10, 10}, false);
+    _output = new Output({args.window, args.font, args.fontSize, {0, 5}, {windowWidth, windowHeight - inputSize.y}}, L"",
+                        {10, 10});
     _output->setStyle(sf::Text::Bold);
 
     const auto suggestionsSize = sf::Vector2f(windowWidth * 0.75f, windowHeight);

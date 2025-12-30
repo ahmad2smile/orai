@@ -2,14 +2,16 @@
 // Created by ahmad on 10/7/2025.
 //
 
-export module StringUtils;
+module;
 
-import <string>;
+#include <string>
 #ifdef _WIN32
-import <windows.h>;
+#include <windows.h>
 #else
-import <cstdlib>;
+#include <cstdlib>
 #endif
+
+export module StringUtils;
 
 export struct  StringUtils {
     static std::wstring charsToWideString(const char* input) {
@@ -24,6 +26,37 @@ export struct  StringUtils {
         std::wstring output(size, 0);
         mbstowcs(&output[0], input.c_str(), size);
 #endif
+        return output;
+    }
+
+    static std::wstring filterControlChars(const std::wstring& input) {
+        std::wstring output;
+        output.reserve(input.size());
+        
+        bool inEscapeSeq = false;
+        for (size_t i = 0; i < input.size(); ++i) {
+            wchar_t c = input[i];
+            
+            // Detect start of ANSI escape sequence (ESC[)
+            if (c == L'\x1B' && i + 1 < input.size() && input[i + 1] == L'[') {
+                inEscapeSeq = true;
+                continue;
+            }
+            
+            // Skip until end of ANSI escape sequence (letter character)
+            if (inEscapeSeq) {
+                if ((c >= L'A' && c <= L'Z') || (c >= L'a' && c <= L'z')) {
+                    inEscapeSeq = false;
+                }
+                continue;
+            }
+            
+            // Allow printable characters, newline, tab, and carriage return
+            if (c >= 32 || c == L'\n' || c == L'\t' || c == L'\r') {
+                output.push_back(c);
+            }
+        }
+        
         return output;
     }
 

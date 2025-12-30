@@ -2,9 +2,12 @@
 // Created by ahmad on 10/5/2025.
 //
 
+module;
+
+#include <windows.h>
+
 export module ConPty;
 
-import <windows.h>;
 
 export class ConPty {
     HANDLE _hInputRead = nullptr;
@@ -47,7 +50,8 @@ public:
         DWORD inBytesRead;
 
         if (PeekNamedPipe(_hOutputRead, nullptr, 0, nullptr, &inBytesRead, nullptr) && inBytesRead > 0) {
-            result = ReadFile(_hOutputRead, buffer, bufferSize, &inBytesRead, nullptr);
+            // Read one less than bufferSize to leave room for null terminator
+            result = ReadFile(_hOutputRead, buffer, bufferSize - 1, &inBytesRead, nullptr);
             buffer[inBytesRead] = '\0';
             *bytesRead = inBytesRead;
         }

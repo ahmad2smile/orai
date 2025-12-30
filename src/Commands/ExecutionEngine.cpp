@@ -48,7 +48,8 @@ std::optional<std::wstring> ExecutionEngine::pollCommandOutput() const {
 
     if (_conPty->readFromConsole(buffer, sizeof(buffer), &bytesRead)) {
         std::cout << "OUT: " << buffer << std::endl;
-        return StringUtils::charsToWideString(buffer);
+        auto wideStr = StringUtils::charsToWideString(buffer);
+        return StringUtils::filterControlChars(wideStr);
     }
 
     return std::nullopt;
@@ -101,7 +102,8 @@ void ExecutionEngine::executeCommand(const std::wstring& command) {
     auto str = _wideConverter->to_bytes(command);
 
 #ifdef _WIN32
-    // const auto wStr = L"pwsh -C \"$OutputEncoding = [System.Text.Encoding]::UTF8; " + command + L"\"";
+    // Append carriage return + newline to execute the command (simulate Enter key)
+    str += "\r\n";
     _successExecution = _conPty->writeToConsole(str.c_str(), str.size());
 
 #else

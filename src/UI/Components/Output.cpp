@@ -6,6 +6,8 @@
 
 #include "src/UI/Graphics/ViewPort.h"
 
+#include <algorithm>
+#include <iostream>
 #include <SFML/Graphics/RectangleShape.hpp>
 
 Output::Output(const ComponentArgs& args, std::wstring&& value, const sf::Vector2f& margin)
@@ -30,7 +32,7 @@ Output::~Output() {
 
 void Output::setSize(const sf::Vector2f& value) {
     Text::setSize(value);
-    _scrollView->setSize(Text::getSize());
+    _scrollView->setSize(value - *_margin * 2.f);
     _border->setSize(value - *_margin * 2.f);
     _background->setSize(value - *_margin * 2.f);
 }
@@ -41,8 +43,7 @@ sf::Vector2f Output::getSize() const {
 
 void Output::setPosition(const sf::Vector2f& value) {
     Text::setPosition(value);
-    _scrollView->setPosition(value);
-    // _scrollView->setPosition(value + Text::getSize() / 2.f);
+    _scrollView->setPosition(value + *_margin);
     _border->setPosition(value + *_margin);
     _background->setPosition(value + *_margin);
 }
@@ -56,9 +57,20 @@ void Output::onEvent(const sf::Event* event) {
 
     if (const auto e = event->getIf<sf::Event::MouseWheelScrolled>()) {
         const auto delta = e->delta * _scrollSpeed;
-        auto outputPosition = _sfText->getPosition();
+        const float currentScrollY = _scrollView->getScrollY();
+        const float newScrollY = currentScrollY - delta;
 
-        _sfText->setPosition({outputPosition.x, outputPosition.y + delta});
+        // Calculate max scroll
+        const auto textBounds = _sfText->getGlobalBounds();
+        const auto textPos = _sfText->getPosition();
+        const auto viewHeight = _scrollView->getSize().y;
+        const auto viewPos = getPosition() + *_margin;
+
+        const float textBottom = textPos.y + textBounds.size.y;
+        const float viewBottom = viewPos.y + viewHeight;
+        const float maxScroll = std::max(0.f, textBottom - viewBottom);
+
+        _scrollView->setScrollY(std::clamp(newScrollY, 0.f, maxScroll));
     }
 
     if (event->getIf<sf::Event::Resized>()) {
@@ -69,12 +81,37 @@ void Output::onEvent(const sf::Event* event) {
     }
 }
 
-void Output::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
-    const auto view = target.getView();
+void Output::appendString(const std::wstring& string) {
+    Text::appendString(string);
+    scrollToBottom();
+}
 
-    target.setView(*_scrollView);
+void Output::scrollToBottom() const {
+    const auto textBounds = _sfText->getGlobalBounds();
+    const auto textPos = _sfText->getPosition();
+    const auto viewHeight = _scrollView->getSize().y;
+    const auto viewPos = getPosition() + *_margin;
+
+    // Text bottom position relative to viewport top
+    const float textBottom = textPos.y + textBounds.size.y;
+    const float viewBottom = viewPos.y + viewHeight;
+
+    // Only scroll if there's overflow
+    if (const float overflow = textBottom - viewBottom; overflow > 0) {
+        _scrollView->setScrollY(overflow);
+    } else {
+        _scrollView->setScrollY(0);
+    }
+}
+
+void Output::draw(sf::RenderTarget& target, const sf::RenderStates states) const {
+    // Draw border and background without viewport clipping
     target.draw(*_border, states);
     target.draw(*_background, states);
+
+    // Draw text with viewport clipping so it doesn't overflow
+    const auto view = target.getView();
+    target.setView(*_scrollView);
     Text::draw(target, states);
     target.setView(view);
 }
